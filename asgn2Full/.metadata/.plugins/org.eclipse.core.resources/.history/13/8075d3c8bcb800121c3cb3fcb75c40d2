@@ -1,0 +1,89 @@
+package asgn2RollingStock;
+
+import asgn2Exceptions.TrainException;
+
+
+/**
+ * @author Yeo Fei Wen 
+ * student_id: n8654361
+ **/
+public class Locomotive extends RollingStock {
+	
+	
+	private Integer weightOfLocomotive;
+	private double powerClass;
+	private String engineType;
+	
+	private Integer electricalEngine = 50;
+	private Integer dieselEngine = 40;
+	private Integer steamEngine = 30;
+	
+	private String classificationError = "Starting with a power value of (1-9), followed by" +
+									"an engine type of either 'E' for Electrical, 'D' for Diesel or 'S' for Steam. " + 
+									"An example will be '4S'.";
+	
+	/**
+	 * Creates a new Locomotive Engine/instance.
+	 * 
+	 * @param grossWeight The gross weight associated with this type of locomotive.
+	 * @param classification The type of engine this locomotive have.
+	 */
+	public Locomotive(Integer grossWeight, String classification) throws TrainException {
+		super(grossWeight);
+		
+		if(grossWeight == null || grossWeight <=0){
+			throw new TrainException("A locomotive gross weight have to be more than 0.");
+		}
+		
+		if(classification == null){
+			throw new TrainException("A locomotive classification have to be added with these guidelines:" +
+					classificationError);
+			
+		}
+		
+		if(classification.length() != 2){
+			throw new TrainException("A locomotive classification have to consist of only two characters. " + 
+					classificationError);
+		}
+		
+		
+		this.powerClass = Double.parseDouble(classification.substring(0,0));
+		this.engineType = classification.substring(1,1);
+		
+		if((powerClass < 1 && powerClass > 9)){
+			throw new TrainException("Invalid power class in classification. Must define using the guidelines. " +
+					classificationError);
+			
+		}
+		
+		if((engineType != "E") && (engineType != "D") && (engineType != "S")){
+			throw new TrainException("Invalid engine type in classification. Must define using the guidelines. " +
+					classificationError);
+		}
+		
+		this.weightOfLocomotive = grossWeight;
+		
+	
+	}
+	
+	/* Returns how much total weight the locomotive can pull. */
+	public Integer power(){
+		Integer pullTotalWeight = null;
+		switch(engineType){
+		case "E": pullTotalWeight = powerClass * electricalEngine;
+		break;
+		case "D": pullTotalWeight = powerClass * dieselEngine;
+		break;
+		case "S": pullTotalWeight = powerClass * steamEngine;
+		}
+		
+		return pullTotalWeight;
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}
