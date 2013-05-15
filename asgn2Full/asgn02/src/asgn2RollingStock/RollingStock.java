@@ -12,6 +12,9 @@ public abstract class RollingStock extends Object {
 	 * @param grossWeight The gross weight associated with this object.
 	 */
 	public RollingStock(Integer grossWeight) throws TrainException {
+		if (grossWeight == null)
+			throw new TrainException("Gross weight must be entered.");
+		
 		if (grossWeight <= 0)
 			throw new TrainException("Invalid gross weight. Must be greater than 0.");
 		this.grossWeight = grossWeight;

@@ -4,8 +4,9 @@ import asgn2Exceptions.TrainException;
 
 
 /**
- * @author Yeo Fei Wen 
- * student_id: n8654361
+ * 
+ * @author Jackson Powell, Yeo Fei Wen
+ *
  **/
 public class Locomotive extends RollingStock {
 	
@@ -42,20 +43,24 @@ public class Locomotive extends RollingStock {
 					classificationError);
 		}
 		
-		this.locomotiveClassification = classification;
+
 		int powerTest = Integer.parseInt(classification.substring(0,1));
 		String engineTest = classification.substring(1,2);
-		if((powerTest < 1 || powerTest > 9)){
+		
+		
+		if(powerTest < 1 || powerTest > 9){
 			throw new TrainException("Invalid power class in classification. Must define using the guidelines. " +
 					classificationError);
 			
 		}
 		
 		if(!engineTest.equals("S") && !engineTest.equals("D") && !engineTest.equals("E")){
-			throw new TrainException(engineTest);
-			/*throw new TrainException("Invalid engine type in classification." + engineType + " Must define using the guidelines. " +
-					classificationError);*/
+			throw new TrainException("Invalid engine type in classification." + engineTest + " Must define using the guidelines. " +
+					classificationError);
 		}
+		
+		
+		this.locomotiveClassification = classification;
 		
 		//PowerClass (0-9)
 		this.powerClass = powerTest;
@@ -66,17 +71,21 @@ public class Locomotive extends RollingStock {
 		//Weight of the Locomotive
 		this.weightOfLocomotive = grossWeight;
 		
-		//total weight the locomotive can pull
-		this.pullTotalWeight = (powerClass * enginePower) - weightOfLocomotive;
-		if(pullTotalWeight <= 0){
+		
+		if(((powerClass * enginePower) - weightOfLocomotive) <= 0){
 			throw new TrainException("Locomotive cannot generate the amount of power to pull and move. " +
 					"Please place a higher power class higher than : " + powerClass);
 		}
 		
+		//total weight the locomotive can pull
+		this.pullTotalWeight = (powerClass * enginePower) - weightOfLocomotive;
 	
 	}
 	
-	/* Returns how much total weight the locomotive can pull. */
+	/**
+	 * Returns how much total weight the locomotive can pull (including itself), calculated as explained above.
+	 * @return the locomotive's "pulling power" in tonnes
+	 */
 	public Integer power(){
 		return pullTotalWeight;
 	}

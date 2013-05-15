@@ -2,13 +2,18 @@ package asgn2RollingStock;
 
 import asgn2Exceptions.TrainException;
 
+/**
+ * 
+ * @author Jackson Powell, Yeo Fei Wen
+ *
+ */
 public class FreightCar extends RollingStock {
 
 	private String goodsType;
 	
 	/**
 	 * Creates a new FreightCar carriage/instance.
-	 * 
+	 * @author Jackson Powell, Yeo Fei Wen
 	 * @param grossWeight The gross weight associated with this car.
 	 * @param goodsType The type of goods associated with this car.
 	 */
