@@ -1,0 +1,33 @@
+tests to do:
+
+valid constructors for each rolling stock object, such as freight, passenger and loco.
+USING WEIGHT: 50
+USING SEATS: 20
+USING GOODSTYPE: G
+USING CLASSIFICATION: 4S
+
+invalid constructors
+USING WEIGHT: -1, null
+USING SEATS: -1, null
+USING GOODSTYPE: X, null
+USING CLASSIFICATION: -1S, 4X, 4XX, 4, null
+
+boundary constructors
+USING WEIGHT: 0
+USING SEATS: 0
+USING GOODSTYPE: H
+USING CLASSIFICATION: 0S
+
+@Before @Test to create succesful RollingStock objects for future correct testing.
+USING WEIGHT: 50
+USING SEATS: 20
+USING GOODSTYPE: G
+USING CLASSIFICATION: 4S
+
+// FREIGHTCAR //
+
+
+// LOCOMOTIVE //
+
+
+// PASSENGERCAR //

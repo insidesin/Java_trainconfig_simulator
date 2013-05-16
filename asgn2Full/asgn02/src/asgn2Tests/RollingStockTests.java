@@ -10,12 +10,11 @@ import asgn2RollingStock.*;
 public class RollingStockTests {
 
 	/* Variables for all test */
-	final Integer STANDARD_TEST_WEIGHT = 50;
+	final Integer VALID_TEST_WEIGHT = 50;
 	final Integer ZERO_VALUE = 0;
-	final Integer NEGATIVE_VALUE = -10;
 
 	/* Variables for FreightCar test */
-	final String STANDARD_GOODS_TYPE = "G";
+	final String VALID_GOODS_TYPE = "G";
 	final String INVALID_GOODS_TYPE = "CAR";
 
 	/* Variables for Locomotive test */
@@ -25,7 +24,7 @@ public class RollingStockTests {
 	final String INVALID_CLASSIFICATION_ENGINE_TYPE = "4K";
 	final String INVALID_CLASSIFICATION_POWER_TYPE = "0S";
 
-	final Integer OVER_STANDARD_TEST_WEIGHT = 400;
+	final Integer OVER_VALID_TEST_WEIGHT = 400;
 	final Integer MAXIMUM_LIMIT_LOCOMOTIVE_WEIGHT = 900;
 
 	/* Variables for PassengerCar test */
@@ -37,16 +36,6 @@ public class RollingStockTests {
 	
 	// /////////////////// FREIGHT CAR TESTS START /////////////////////
 
-	/* TEST IF FreightCar1 == FreightCar2??? */
-//	private boolean objectsEqual(FreightCar subject1, FreightCar subject2) {
-//		if (subject1 instanceof FreightCar && subject2 instanceof FreightCar) {
-//			if (subject1.getGrossWeight() == subject2.getGrossWeight()
-//					&& subject1.goodsType() == subject2.goodsType())
-//				return true;
-//		}
-//		return false;
-//	}
-
 	@Test
 	/*
 	 * Attempt to construct a new FreightCar object with valid arguments.
@@ -55,9 +44,9 @@ public class RollingStockTests {
 	 */
 	public void testFreightCarConstructorWithValidArguments()
 			throws TrainException {
-		FreightCar newFreightCar = new FreightCar(STANDARD_TEST_WEIGHT,
-				STANDARD_GOODS_TYPE);
-		assertEquals(newFreightCar.getGrossWeight(), STANDARD_TEST_WEIGHT);
+		FreightCar newFreightCar = new FreightCar(VALID_TEST_WEIGHT,
+				VALID_GOODS_TYPE);
+		assertEquals(newFreightCar.getGrossWeight(), VALID_TEST_WEIGHT);
 	}
 
 	@Test(expected = TrainException.class)
@@ -69,8 +58,8 @@ public class RollingStockTests {
 	 */
 	public void testFreightCarConstructorWithNegativeGrossWeight()
 			throws TrainException {
-		FreightCar newFreightCar = new FreightCar(NEGATIVE_VALUE,
-				STANDARD_GOODS_TYPE);
+		FreightCar newFreightCar = new FreightCar(-VALID_TEST_WEIGHT,
+				VALID_GOODS_TYPE);
 	}
 
 	@Test(expected = TrainException.class)
@@ -83,7 +72,7 @@ public class RollingStockTests {
 	public void testFreightCarConstructorWithZeroGrossWeight()
 			throws TrainException {
 		FreightCar newFreightCar = new FreightCar(ZERO_VALUE,
-				STANDARD_GOODS_TYPE);
+				VALID_GOODS_TYPE);
 	}
 
 	@Test(expected = TrainException.class)
@@ -95,7 +84,7 @@ public class RollingStockTests {
 	 */
 	public void testFreightCarConstructorWithNullGrossWeight()
 			throws TrainException {
-		FreightCar newFreightCar = new FreightCar(null, STANDARD_GOODS_TYPE);
+		FreightCar newFreightCar = new FreightCar(null, VALID_GOODS_TYPE);
 	}
 
 	@Test(expected = TrainException.class)
@@ -107,7 +96,7 @@ public class RollingStockTests {
 	 */
 	public void testFreightCarConstructorWithInvalidGoodsType()
 			throws TrainException {
-		FreightCar newFreightCar = new FreightCar(STANDARD_TEST_WEIGHT,
+		FreightCar newFreightCar = new FreightCar(VALID_TEST_WEIGHT,
 				INVALID_GOODS_TYPE);
 	}
 
@@ -120,7 +109,7 @@ public class RollingStockTests {
 	 */
 	public void testFreightCarConstructorWithNullGoodsType()
 			throws TrainException {
-		FreightCar newFreightCar = new FreightCar(STANDARD_TEST_WEIGHT, null);
+		FreightCar newFreightCar = new FreightCar(VALID_TEST_WEIGHT, null);
 	}
 
 	@Test(expected = TrainException.class)
@@ -143,9 +132,9 @@ public class RollingStockTests {
 	 * @author Jackson Powell
 	 */
 	public void testFreightCarGetGrossWeight() throws TrainException {
-		FreightCar newFreightCar = new FreightCar(STANDARD_TEST_WEIGHT,
-				STANDARD_GOODS_TYPE);
-		assertEquals(STANDARD_TEST_WEIGHT, newFreightCar.getGrossWeight());
+		FreightCar newFreightCar = new FreightCar(VALID_TEST_WEIGHT,
+				VALID_GOODS_TYPE);
+		assertEquals(VALID_TEST_WEIGHT, newFreightCar.getGrossWeight());
 	}
 
 	@Test
@@ -155,9 +144,9 @@ public class RollingStockTests {
 	 * @author Jackson Powell
 	 */
 	public void testFreightCarGetGoodsType() throws TrainException {
-		FreightCar newFreightCar = new FreightCar(STANDARD_TEST_WEIGHT,
-				STANDARD_GOODS_TYPE);
-		assertEquals(STANDARD_TEST_WEIGHT, newFreightCar.getGrossWeight());
+		FreightCar newFreightCar = new FreightCar(VALID_TEST_WEIGHT,
+				VALID_GOODS_TYPE);
+		assertEquals(VALID_TEST_WEIGHT, newFreightCar.getGrossWeight());
 	}
 
 	@Test
@@ -167,9 +156,9 @@ public class RollingStockTests {
 	 * @author Jackson Powell
 	 */
 	public void testFreightCarToString() throws TrainException {
-		FreightCar newFreightCar = new FreightCar(STANDARD_TEST_WEIGHT,
-				STANDARD_GOODS_TYPE);
-		assertEquals("Freight(" + STANDARD_GOODS_TYPE + ")",
+		FreightCar newFreightCar = new FreightCar(VALID_TEST_WEIGHT,
+				VALID_GOODS_TYPE);
+		assertEquals("Freight(" + VALID_GOODS_TYPE + ")",
 				newFreightCar.toString());
 	}
 
@@ -183,7 +172,7 @@ public class RollingStockTests {
 	 */
 	public void testLocomotiveConstructorWithValidArguments()
 			throws TrainException {
-		Locomotive newLocomotive = new Locomotive(STANDARD_TEST_WEIGHT,
+		Locomotive newLocomotive = new Locomotive(VALID_TEST_WEIGHT,
 				VALID_CLASSIFICATION_TYPE);
 	}
 
@@ -219,7 +208,7 @@ public class RollingStockTests {
 	 */
 	public void testLocomotiveConstructorWithNegativeGrossWeight()
 			throws TrainException {
-		Locomotive newLocomotive = new Locomotive(NEGATIVE_VALUE,
+		Locomotive newLocomotive = new Locomotive(-VALID_TEST_WEIGHT,
 				VALID_CLASSIFICATION_TYPE);
 	}
 
@@ -232,7 +221,7 @@ public class RollingStockTests {
 	 */
 	public void testLocomotiveConstructorWithNullClassification()
 			throws TrainException {
-		Locomotive newLocomotive = new Locomotive(STANDARD_TEST_WEIGHT, null);
+		Locomotive newLocomotive = new Locomotive(VALID_TEST_WEIGHT, null);
 	}
 
 	@Test(expected = TrainException.class)
@@ -244,7 +233,7 @@ public class RollingStockTests {
 	 */
 	public void testLocomotiveConstructorWithInvalidClassificationLengthOfOne()
 			throws TrainException {
-		Locomotive newLocomotive = new Locomotive(STANDARD_TEST_WEIGHT,
+		Locomotive newLocomotive = new Locomotive(VALID_TEST_WEIGHT,
 				INVALID_CLASSIFICATION_LENGTH_OF_1);
 	}
 
@@ -257,7 +246,7 @@ public class RollingStockTests {
 	 */
 	public void testLocomotiveConstructorWithInvalidClassificationLengthOfThree()
 			throws TrainException {
-		Locomotive newLocomotive = new Locomotive(STANDARD_TEST_WEIGHT,
+		Locomotive newLocomotive = new Locomotive(VALID_TEST_WEIGHT,
 				INVALID_CLASSIFICATION_LENGTH_OF_3);
 	}
 
@@ -270,7 +259,7 @@ public class RollingStockTests {
 	 */
 	public void testLocomotiveConstructorWithInvalidClassificationPowerType()
 			throws TrainException {
-		Locomotive newLocomotive = new Locomotive(STANDARD_TEST_WEIGHT,
+		Locomotive newLocomotive = new Locomotive(VALID_TEST_WEIGHT,
 				INVALID_CLASSIFICATION_POWER_TYPE);
 	}
 
@@ -283,7 +272,7 @@ public class RollingStockTests {
 	 */
 	public void testLocomotiveConstructorWithInvalidClassificationEngineType()
 			throws TrainException {
-		Locomotive newLocomotive = new Locomotive(STANDARD_TEST_WEIGHT,
+		Locomotive newLocomotive = new Locomotive(VALID_TEST_WEIGHT,
 				INVALID_CLASSIFICATION_ENGINE_TYPE);
 	}
 
@@ -294,9 +283,9 @@ public class RollingStockTests {
 	 * @author Yeo Fei Wen
 	 */
 	public void testLocomotiveGetGrossWeight() throws TrainException {
-		Locomotive newLocomotive = new Locomotive(STANDARD_TEST_WEIGHT,
+		Locomotive newLocomotive = new Locomotive(VALID_TEST_WEIGHT,
 				VALID_CLASSIFICATION_TYPE);
-		Integer testWeight = STANDARD_TEST_WEIGHT;
+		Integer testWeight = VALID_TEST_WEIGHT;
 		assertEquals(testWeight, newLocomotive.getGrossWeight());
 	}
 
@@ -308,10 +297,10 @@ public class RollingStockTests {
 	 * @author Yeo Fei Wen
 	 */
 	public void testLocomotiveGetPower() throws TrainException {
-		Locomotive newLocomotive = new Locomotive(STANDARD_TEST_WEIGHT,
+		Locomotive newLocomotive = new Locomotive(VALID_TEST_WEIGHT,
 				VALID_CLASSIFICATION_TYPE);
 		Integer locomotivePower = null;
-		locomotivePower = (4 * 100) - STANDARD_TEST_WEIGHT;
+		locomotivePower = (4 * 100) - VALID_TEST_WEIGHT;
 		Integer returnedLocomotivePower = null;
 		returnedLocomotivePower = newLocomotive.power();
 		assertEquals(locomotivePower, returnedLocomotivePower);
@@ -325,7 +314,7 @@ public class RollingStockTests {
 	 * @author Yeo Fei Wen
 	 */
 	public void testLocomotiveGetPowerSameAsGrossWeight() throws TrainException {
-		Locomotive newLocomotive = new Locomotive(OVER_STANDARD_TEST_WEIGHT,
+		Locomotive newLocomotive = new Locomotive(OVER_VALID_TEST_WEIGHT,
 				VALID_CLASSIFICATION_TYPE);
 		Integer returnedLocomotivePower = null;
 		returnedLocomotivePower = newLocomotive.power();
@@ -353,7 +342,7 @@ public class RollingStockTests {
 	 * @author Yeo Fei Wen
 	 */
 	public void testLocomotiveToString() throws TrainException {
-		Locomotive newLocomotive = new Locomotive(STANDARD_TEST_WEIGHT,
+		Locomotive newLocomotive = new Locomotive(VALID_TEST_WEIGHT,
 				VALID_CLASSIFICATION_TYPE);
 		String testString = "Loco(" + VALID_CLASSIFICATION_TYPE + ")";
 		assertEquals(testString, newLocomotive.toString());
@@ -369,7 +358,7 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarConstructorWithValidArguments()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
 	}
 
@@ -395,7 +384,7 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarConstructorWithNegativeGrossWeight()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(NEGATIVE_VALUE,
+		PassengerCar testPassengerCar = new PassengerCar(-VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
 	}
 
@@ -408,7 +397,7 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarConstructorWithZeroNumOfSeats()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				ZERO_VALUE);
 	}
 
@@ -421,8 +410,8 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarConstructorWithNegativeNumOfSeats()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
-				NEGATIVE_VALUE);
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
+				-VALID_NUM_OF_EMPTY_SEATS);
 	}
 
 	@Test
@@ -434,7 +423,7 @@ public class RollingStockTests {
 	 * @author Yeo Fei Wen
 	 */
 	public void testPassengerCarBoardWithValidArguments() throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
 		Integer testNumOfBoardingPassengers = 0;
 		assertEquals(testNumOfBoardingPassengers,
@@ -452,7 +441,7 @@ public class RollingStockTests {
 //	 * @author Yeo Fei Wen
 //	 */
 //	public void testPassengerCarBoardTwiceWithValidArguments() throws TrainException {
-//		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+//		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 //				VALID_NUM_OF_EMPTY_SEATS);
 //		Integer testNumOfBoardingPassengers = 16;
 //		testPassengerCar.board(5);
@@ -469,7 +458,7 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarBoardWithZeroBoardingPassengers()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
 		Integer testNumOfBoardingPassengers = 0;
 		assertEquals(testNumOfBoardingPassengers,
@@ -485,9 +474,9 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarBoardWithNegativeBoardingPassengers()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
-		testPassengerCar.board(NEGATIVE_VALUE);
+		testPassengerCar.board(-VALID_OVER_NUM_OF_BOARDING_PASSENGERS);
 	}
 
 	@Test
@@ -500,7 +489,7 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarBoardWithOverMaximumBoardingPassengers()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
 		Integer testNumOfBoardingPassengers = 2;
 		assertEquals(testNumOfBoardingPassengers,
@@ -515,7 +504,7 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarAlightWithValidArguments()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
 		testPassengerCar.board(VALID_NUM_OF_BOARDING_PASSENGERS);
 		testPassengerCar.alight(VALID_NUM_OF_ALIGHTING_PASSENGERS);
@@ -529,7 +518,7 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarAlightWithZeroAlightingPassengers()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
 		testPassengerCar.board(VALID_NUM_OF_BOARDING_PASSENGERS);
 		testPassengerCar.alight(ZERO_VALUE);
@@ -543,10 +532,10 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarAlightWithNegativeAlightingPassengers()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
 		testPassengerCar.board(VALID_NUM_OF_BOARDING_PASSENGERS);
-		testPassengerCar.alight(NEGATIVE_VALUE);
+		testPassengerCar.alight(-VALID_NUM_OF_BOARDING_PASSENGERS);
 	}
 
 	@Test(expected = TrainException.class)
@@ -558,7 +547,7 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarAlightWithOverMaximumAlightingPassengers()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
 		testPassengerCar.board(VALID_NUM_OF_BOARDING_PASSENGERS);
 		testPassengerCar.alight(VALID_OVER_NUM_OF_BOARDING_PASSENGERS);
@@ -573,7 +562,7 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarNumberOnBoardFunctionBeforeBoarding()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
 		Integer testNumOfPassengers = 0;
 		assertEquals(testNumOfPassengers, testPassengerCar.numberOnBoard());
@@ -588,7 +577,7 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarNumberOnBoardFunctionAfterBoarding()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
 		testPassengerCar.board(VALID_NUM_OF_BOARDING_PASSENGERS);
 		Integer testNumOfPassengers = VALID_NUM_OF_BOARDING_PASSENGERS;
@@ -604,7 +593,7 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarNumberOnBoardFunctionAfterAlight()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
 		testPassengerCar.board(VALID_NUM_OF_BOARDING_PASSENGERS);
 		testPassengerCar.alight(VALID_NUM_OF_ALIGHTING_PASSENGERS);
@@ -622,7 +611,7 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarNumberOfSeatsFunctionWithValidArguments()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS);
 		assertEquals(testPassengerCar.numberOfSeats(), VALID_NUM_OF_EMPTY_SEATS);
 	}
@@ -636,7 +625,7 @@ public class RollingStockTests {
 	 */
 	public void testPassengerCarNumberOfSeatsFunctionWithZeroSeats()
 			throws TrainException {
-		PassengerCar testPassengerCar = new PassengerCar(STANDARD_TEST_WEIGHT,
+		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
 				ZERO_VALUE);
 		assertEquals(testPassengerCar.numberOfSeats(), ZERO_VALUE);
 	}
