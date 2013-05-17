@@ -57,22 +57,19 @@ public class PassengerCar extends RollingStock {
 	 *            If the number of new passengers is negative.
 	 */
 	public Integer board(Integer newPassengers) throws TrainException {
-		if (newPassengers < 0) {
+		if (newPassengers < 0)
 			throw new TrainException(
 					"Number of passengers cannot be a negative. Only 0 or more can board.");
-		}
-
+		
 		Integer unableToBoardPassengers = 0;
 
-		if (newPassengers > numOfSeats) {
-			unableToBoardPassengers = newPassengers - numOfSeats;
-			this.onBoardPassengers = numOfSeats;
-
-			return unableToBoardPassengers;
+		if((onBoardPassengers + newPassengers) <= numOfSeats) {
+			this.onBoardPassengers += newPassengers;
 		} else {
-			this.onBoardPassengers = newPassengers;
-			return 0;
+			unableToBoardPassengers = ((onBoardPassengers + newPassengers) % numOfSeats);
+			this.onBoardPassengers = numOfSeats;
 		}
+		return unableToBoardPassengers;
 	}
 
 	/**
