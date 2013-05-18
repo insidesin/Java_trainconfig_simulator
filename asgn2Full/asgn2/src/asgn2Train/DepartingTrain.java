@@ -22,9 +22,9 @@ public class DepartingTrain extends Object {
 	}
 
 	public void addCarriage(RollingStock newCarriage) throws TrainException {
-		// if (numberOnBoard() != 0)
-		// throw new TrainException(
-		// "Cannot add carriages whilst passengers on board");
+		if (numberOnBoard() != 0)
+			throw new TrainException(
+					"Cannot add carriages whilst passengers on board");
 
 		if (trainConfiguration.isEmpty()
 				&& !(newCarriage instanceof Locomotive))
@@ -36,12 +36,12 @@ public class DepartingTrain extends Object {
 			throw new TrainException(
 					"Cannot add another Locomotive. Only one allowed per setup.");
 
-		if (!trainConfiguration.isEmpty() &&
-				(trainConfiguration.peek() instanceof FreightCar)
+		if (!trainConfiguration.isEmpty()
+				&& (trainConfiguration.peek() instanceof FreightCar)
 				&& (newCarriage instanceof PassengerCar))
 			throw new TrainException(
-					"Cannot add a PassengerCar. A FreightCar has already been " +
-					"added to the setup, please remove it before adding more PassengerCars.");
+					"Cannot add a PassengerCar. A FreightCar has already been "
+							+ "added to the setup, please remove it before adding more PassengerCars.");
 
 		trainConfiguration.push(newCarriage);
 	}
@@ -69,12 +69,13 @@ public class DepartingTrain extends Object {
 		configurationIndex++;
 		return trainConfiguration.get(configurationIndex - 1);
 	}
-	
+
 	public Integer numberOnBoard() {
 		int totalPassengerCount = 0;
-		for(int i = 0; i < trainConfiguration.size(); i++) {
-			if(trainConfiguration.get(i) instanceof PassengerCar) {
-				totalPassengerCount += ((PassengerCar) trainConfiguration.get(i)).numberOnBoard();
+		for (int i = 0; i < trainConfiguration.size(); i++) {
+			if (trainConfiguration.get(i) instanceof PassengerCar) {
+				totalPassengerCount += ((PassengerCar) trainConfiguration
+						.get(i)).numberOnBoard();
 			}
 		}
 		return totalPassengerCount;
@@ -82,26 +83,25 @@ public class DepartingTrain extends Object {
 
 	public Integer numberOfSeats() {
 		int totalSeatCount = 0;
-		for(int i = 0; i < trainConfiguration.size(); i++) {
-			if(trainConfiguration.get(i) instanceof PassengerCar) {
-				totalSeatCount += ((PassengerCar) trainConfiguration.get(i)).numberOfSeats();
+		for (int i = 0; i < trainConfiguration.size(); i++) {
+			if (trainConfiguration.get(i) instanceof PassengerCar) {
+				totalSeatCount += ((PassengerCar) trainConfiguration.get(i))
+						.numberOfSeats();
 			}
 		}
 		return totalSeatCount;
 	}
-	
-	
+
 	public Integer board(Integer newPassengers) throws TrainException {
-		if (newPassengers == null)
-			throw new TrainException("Passenger count must be an Integer.");
 		if (newPassengers < 0)
 			throw new TrainException("Cannot board a negative passenger count.");
-		
+
 		Integer passengersToBoardTrain = newPassengers;
 
-		for(int i = 0; i < trainConfiguration.size(); i++) {
-			if(trainConfiguration.get(i) instanceof PassengerCar) {
-				passengersToBoardTrain = ((PassengerCar) trainConfiguration.get(i)).board(passengersToBoardTrain);
+		for (int i = 0; i < trainConfiguration.size(); i++) {
+			if (trainConfiguration.get(i) instanceof PassengerCar) {
+				passengersToBoardTrain = ((PassengerCar) trainConfiguration
+						.get(i)).board(passengersToBoardTrain);
 			}
 		}
 		return passengersToBoardTrain;

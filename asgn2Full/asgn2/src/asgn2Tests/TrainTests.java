@@ -292,6 +292,22 @@ public class TrainTests {
 
 	@Test
 	/*
+	 * Attempt to create a train consisting of 20 seats in 1 carriage and then
+	 * check that there are no passengers on board with numberOnBoard.
+	 * 
+	 * @author Jackson Powell
+	 */
+	public void testNumberOnBoardWithZeroPassengersBoarded()
+			throws TrainException {
+		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT,
+				VALID_CLASSIFICATION_TYPE));
+		testTrain.addCarriage(new PassengerCar(VALID_TEST_WEIGHT,
+				VALID_NUM_OF_EMPTY_SEATS));
+		assertEquals(ZERO_VALUE, testTrain.numberOnBoard());
+	}
+
+	@Test
+	/*
 	 * Attempt to board 0 passengers on a train consisting of 20 seats and then
 	 * check that there are no passengers on board with numberOnBoard.
 	 * 
@@ -315,7 +331,8 @@ public class TrainTests {
 	 * 
 	 * @author Jackson Powell
 	 */
-	public void testBoardFifteenPassengersWithOnePassengerCar() throws TrainException {
+	public void testBoardFifteenPassengersWithOnePassengerCar()
+			throws TrainException {
 		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT,
 				VALID_CLASSIFICATION_TYPE));
 		testTrain.addCarriage(new PassengerCar(VALID_TEST_WEIGHT,
@@ -333,7 +350,8 @@ public class TrainTests {
 	 * 
 	 * @author Jackson Powell
 	 */
-	public void testBoardMaxPassengersWithOnePassengerCar() throws TrainException {
+	public void testBoardMaxPassengersWithOnePassengerCar()
+			throws TrainException {
 		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT,
 				VALID_CLASSIFICATION_TYPE));
 		testTrain.addCarriage(new PassengerCar(VALID_TEST_WEIGHT,
@@ -366,15 +384,16 @@ public class TrainTests {
 		testTrain.board(boardingCount);
 		assertTrue((boardingCount + boardingCount) == testTrain.numberOnBoard());
 	}
-	
+
 	@Test
 	/*
-	 * Attempt to board 21 passengers on a train consisting of 
-	 * 20 seats which should expect 1 not to be boarded.
+	 * Attempt to board 21 passengers on a train consisting of 20 seats which
+	 * should expect 1 not to be boarded.
 	 * 
 	 * @author Jackson Powell
 	 */
-	public void testBoardOverMaxPassengersWithOnePassengerCar() throws TrainException {
+	public void testBoardOverMaxPassengersWithOnePassengerCar()
+			throws TrainException {
 		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT,
 				VALID_CLASSIFICATION_TYPE));
 		testTrain.addCarriage(new PassengerCar(VALID_TEST_WEIGHT,
@@ -384,15 +403,16 @@ public class TrainTests {
 		Integer leftOverPassengers = testTrain.board(boardingCount);
 		assertTrue(leftOverPassengers == ONE_VALUE);
 	}
-	
+
 	@Test(expected = TrainException.class)
 	/*
-	 * Attempt to board -1 passengers on a train consisting of 
-	 * 20 seats which should expect an exception.
+	 * Attempt to board -1 passengers on a train consisting of 20 seats which
+	 * should expect an exception.
 	 * 
 	 * @author Jackson Powell
 	 */
-	public void testBoardNegativePassengersWithOnePassengerCar() throws TrainException {
+	public void testBoardNegativePassengersWithOnePassengerCar()
+			throws TrainException {
 		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT,
 				VALID_CLASSIFICATION_TYPE));
 		testTrain.addCarriage(new PassengerCar(VALID_TEST_WEIGHT,
@@ -401,22 +421,74 @@ public class TrainTests {
 		final Integer boardingCount = -ONE_VALUE;
 		testTrain.board(boardingCount);
 	}
-	
-	@Test(expected = TrainException.class)
+
+	@Test
 	/*
-	 * Attempt to board -1 passengers on a train consisting of 
-	 * 20 seats which should expect an exception.
+	 * Attempt to get the first carriage in an empty train setup. Expect it to
+	 * return null.
 	 * 
 	 * @author Jackson Powell
 	 */
-	public void testBoardNullPassengersWithOnePassengerCar() throws TrainException {
+	public void testFirstCarriageWithEmptyTrain() throws TrainException {
+		assertEquals(null, testTrain.firstCarriage());
+	}
+
+	@Test
+	/*
+	 * Attempt to get the next carriage in an empty train setup. Expect it to
+	 * return null.
+	 * 
+	 * @author Jackson Powell
+	 */
+	public void testNextCarriageWithEmptyTrain() throws TrainException {
+		assertEquals(null, testTrain.nextCarriage());
+	}
+
+	@Test
+	/*
+	 * Attempt to count the amount of seats on a Train with 1 passenger car of
+	 * 20 seats.
+	 * 
+	 * @author Jackson Powell
+	 */
+	public void testNumberOfSeatsWithTwentySeatsOnOnePassengerCar()
+			throws TrainException {
 		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT,
 				VALID_CLASSIFICATION_TYPE));
 		testTrain.addCarriage(new PassengerCar(VALID_TEST_WEIGHT,
 				VALID_NUM_OF_EMPTY_SEATS));
-		// board count = to null.
-		final Integer boardingCount = null;
-		testTrain.board(boardingCount);
+		assertEquals(VALID_NUM_OF_EMPTY_SEATS, testTrain.numberOfSeats());
+	}
+
+	@Test
+	/*
+	 * Attempt to count the amount of seats on a Train with 1 passenger car of 0
+	 * seats.
+	 * 
+	 * @author Jackson Powell
+	 */
+	public void testNumberOfSeatsWithZeroSeatsOnOnePassengerCar()
+			throws TrainException {
+		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT,
+				VALID_CLASSIFICATION_TYPE));
+		testTrain.addCarriage(new PassengerCar(VALID_TEST_WEIGHT, ZERO_VALUE));
+		assertEquals(ZERO_VALUE, testTrain.numberOfSeats());
+	}
+
+	@Test
+	/*
+	 * Attempt to count the amount of seats on a Train with 1 passenger car of 0
+	 * seats.
+	 * 
+	 * @author Jackson Powell
+	 */
+	public void testNumberOfSeatsWithZeroSeatsOnOneFreightCar()
+			throws TrainException {
+		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT,
+				VALID_CLASSIFICATION_TYPE));
+		testTrain.addCarriage(new FreightCar(VALID_TEST_WEIGHT,
+				VALID_GOODS_TYPE));
+		assertEquals(ZERO_VALUE, testTrain.numberOfSeats());
 	}
 
 }
