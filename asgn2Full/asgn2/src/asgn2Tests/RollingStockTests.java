@@ -306,21 +306,22 @@ public class RollingStockTests {
 		assertEquals(locomotivePower, returnedLocomotivePower);
 	}
 
-	@Test(expected = TrainException.class)
+	@Test
 	/*
 	 * Attempt to get the Integer value from Locomotive.power() method with same
 	 * gross weight to amount of weight locomotive is able to pull
 	 * 
 	 * @author Yeo Fei Wen
 	 */
-	public void testLocomotiveGetPowerSameAsGrossWeight() throws TrainException {
+	public void testLocomotiveGetPowerSameAsGrossWeight() 
+			throws TrainException {
 		Locomotive newLocomotive = new Locomotive(OVER_VALID_TEST_WEIGHT,
 				VALID_CLASSIFICATION_TYPE);
 		Integer returnedLocomotivePower = null;
 		returnedLocomotivePower = newLocomotive.power();
 	}
 
-	@Test(expected = TrainException.class)
+	@Test
 	/*
 	 * Attempt to get the Integer value from Locomotive.power() method with same
 	 * gross weight to amount of weight locomotive is able to pull

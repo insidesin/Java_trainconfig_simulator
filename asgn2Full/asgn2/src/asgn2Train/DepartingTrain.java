@@ -10,6 +10,7 @@ public class DepartingTrain extends Object {
 	Stack<RollingStock> trainConfiguration;
 
 	private int configurationIndex = 0;
+	private Integer totalTrainPower = 0;
 
 	/**
 	 * Constructs a DepartingTrain object that initializes an empty stack of
@@ -44,6 +45,21 @@ public class DepartingTrain extends Object {
 							+ "added to the setup, please remove it before adding more PassengerCars.");
 
 		trainConfiguration.push(newCarriage);
+	}
+	
+	public void removeCarriage() throws TrainException{
+		if(this.numberOnBoard() != 0){
+			throw new TrainException("Removal/Shunting of any carriages are not allowed as there are" +
+					" passengers on board.");
+		}
+		
+		if(trainConfiguration.isEmpty()){
+			throw new TrainException("There are no carriages to be removed.");
+		}
+		
+		trainConfiguration.pop();
+		
+		
 	}
 
 	public RollingStock firstCarriage() {
@@ -107,4 +123,36 @@ public class DepartingTrain extends Object {
 		return passengersToBoardTrain;
 	}
 
-}
+	
+	public boolean trainCanMove(){
+		Integer totalTrainWeight = 0;
+		Integer TrainPower = 0;
+		for (int i = 0; i < trainConfiguration.size(); i++) {
+			if(trainConfiguration.get(i) instanceof Locomotive){
+				TrainPower = ((Locomotive) trainConfiguration.get(i)).power();
+			}
+			
+			totalTrainWeight += trainConfiguration.get(i).getGrossWeight();
+			}
+		
+			if((TrainPower == 0 && totalTrainWeight == 0) || (TrainPower > totalTrainWeight) && TrainPower > 0){
+				return true;
+			}else{
+				return false;
+			}
+		}
+	
+	public String toString(){
+		String departingTrainString = "";
+		for (int i = 0; i < trainConfiguration.size(); i++){
+			if(i == 0){
+				departingTrainString += trainConfiguration.get(i).toString();
+			}else{
+				departingTrainString += "-" + trainConfiguration.get(i).toString();
+			}
+			
+		}
+		return departingTrainString;
+	}
+	
+	}

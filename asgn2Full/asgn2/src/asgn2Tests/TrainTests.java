@@ -490,5 +490,244 @@ public class TrainTests {
 				VALID_GOODS_TYPE));
 		assertEquals(ZERO_VALUE, testTrain.numberOfSeats());
 	}
+	
+	
+	@Test
+	/*
+	 * Attempt to determine if a train is able to move without any carriages or locomotive
+	 * 
+	 * @author Yeo Fei Wen
+	 */
+	public void testEmptyTrainConfigurationTrainCanMove()
+			throws TrainException{
+		assertTrue(testTrain.trainCanMove());
+	}
 
+	@Test
+	/*
+	 * Attempt to determine if a train is able to move with 1 Locomotive in the front
+	 * 
+	 * @author Yeo Fei Wen
+	 */
+	public void testTrainConfigurationSingleLocomotiveTrainCanMove()
+			throws TrainException{
+		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT,
+				VALID_CLASSIFICATION_TYPE));
+		assertTrue(testTrain.trainCanMove());
+	}
+	
+	@Test
+	/*
+	 * Attempt to determine if a train is unable to move with 1 Locomotive in the front
+	 * with gross weight equivalent to the amount of weight able to be pulled
+	 * 
+	 * @author Yeo Fei Wen
+	 */
+	public void testTrainConfigurationSingleLocomotiveTrainSameGrossWeightCanMove()
+			throws TrainException{
+		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT*8,
+				VALID_CLASSIFICATION_TYPE));
+		assertFalse(testTrain.trainCanMove());
+	}
+	
+	@Test
+	/*
+	 * Attempt to determine if a train is unable to move with 1 Locomotive in the front
+	 * with gross weight surpassing the amount of weight able to be pulled
+	 * 
+	 * @author Yeo Fei Wen
+	 */
+	public void testTrainConfigurationSingleLocomotiveTrainOverGrossWeightCanMove()
+			throws TrainException{
+		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT*8 + 1,
+				VALID_CLASSIFICATION_TYPE));
+		assertFalse(testTrain.trainCanMove());
+	}
+	
+	@Test
+	/*
+	 * Attempt to determine if a train can move with 1 locomotive
+	 * and any form of carriage with total gross weight valid
+	 * 
+	 * @author Yeo Fei Wen
+	 */
+	public void testTrainConfigurationWith1LocomotiveAndAdditionalCarriageCanMove()
+			throws TrainException{
+		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT,
+				VALID_CLASSIFICATION_TYPE));
+		for(int i=0;i < 2;i++){
+			if(i == 0){
+				testTrain.addCarriage(new PassengerCar(VALID_TEST_WEIGHT, VALID_NUM_OF_BOARDING_PASSENGERS));
+				assertTrue(testTrain.trainCanMove());
+			}
+			else {
+				testTrain.addCarriage(new FreightCar(VALID_TEST_WEIGHT, VALID_GOODS_TYPE));
+				assertTrue(testTrain.trainCanMove());
+			}
+			
+		}
+		assertTrue(testTrain.trainCanMove());
+	}
+	
+	@Test
+	/*
+	 * Attempt to test if string output is an empty string if no rollingstock
+	 * object is added
+	 * 
+	 * @author Yeo Fei Wen
+	 */
+	public void testDepartingTrainToStringEmpty()
+			throws TrainException{
+		String testString = testTrain.toString();
+		assertEquals(testString,"");
+	}
+	
+	@Test
+	/*
+	 * Attempt to test if string output is an empty string if no rollingstock
+	 * object is added
+	 * 
+	 * @author Yeo Fei Wen
+	 */
+	public void testDepartingTrainWithLocomotiveToString()
+			throws TrainException{
+		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT, VALID_CLASSIFICATION_TYPE));
+		String testString = testTrain.toString();
+		assertEquals(testString,"Loco(4S)");
+	}
+	
+	@Test
+	/*
+	 * Attempt to test if string output is desired string with train setup of
+	 * Locomotive and PassengerCar
+	 * 
+	 * @author Yeo Fei Wen
+	 */
+	public void testDepartingTrainWithLocomotiveAndPassengerToString()
+			throws TrainException{
+		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT, VALID_CLASSIFICATION_TYPE));
+		testTrain.addCarriage(new PassengerCar(VALID_TEST_WEIGHT, VALID_NUM_OF_BOARDING_PASSENGERS));
+		String testString = testTrain.toString();
+		assertEquals(testString,"Loco(4S)-Passenger(0/"+ VALID_NUM_OF_BOARDING_PASSENGERS +")");
+	}
+	
+	@Test
+	/*
+	 * Attempt to test if string output is desired string with train setup of
+	 * Locomotive and Freight
+	 * 
+	 * @author Yeo Fei Wen
+	 */
+	public void testDepartingTrainWithLocomotiveAndFreightToString()
+			throws TrainException{
+		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT, VALID_CLASSIFICATION_TYPE));
+		testTrain.addCarriage(new FreightCar(VALID_TEST_WEIGHT, VALID_GOODS_TYPE));
+		String testString = testTrain.toString();
+		assertEquals(testString,"Loco(4S)-Freight("+VALID_GOODS_TYPE+")");
+	}
+	
+	@Test
+	/*
+	 * Attempt to test if string output is desired string with train setup of
+	 * Locomotive, Passenger and Freight
+	 * 
+	 * @author Yeo Fei Wen
+	 */
+	public void testDepartingTrainWithLocomotiveAndPassengerAndFreightToString()
+			throws TrainException{
+		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT, VALID_CLASSIFICATION_TYPE));
+		testTrain.addCarriage(new PassengerCar(VALID_TEST_WEIGHT, VALID_NUM_OF_BOARDING_PASSENGERS));
+		testTrain.addCarriage(new FreightCar(VALID_TEST_WEIGHT, VALID_GOODS_TYPE));
+		String testString = testTrain.toString();
+		assertEquals(testString,"Loco(4S)-Passenger(0/"+
+					VALID_NUM_OF_BOARDING_PASSENGERS +")-Freight("+VALID_GOODS_TYPE+")");
+	}
+	
+	@Test(expected = TrainException.class)
+	/*
+	 * Attempt to test remove carriage on empty departing train
+	 * 
+	 * @author Yeo Fei Wen
+	 */
+	public void testEmptyDepartingTrainWithRemoveCarriage()
+			throws TrainException{
+		testTrain.removeCarriage();
+	}
+	
+	@Test
+	/*
+	 * Attempt to test remove carriage on departing train with one locomotive
+	 * 
+	 * @author Yeo Fei Wen
+	 * 
+	 */
+	public void testDepartingTrainWithLocomotiveWithRemoveCarriage()
+			throws TrainException{
+		testTrain.addCarriage(new Locomotive(VALID_TEST_WEIGHT, VALID_CLASSIFICATION_TYPE));
+		testTrain.removeCarriage();
+		assertEquals(testTrain.firstCarriage(),null);
+	}
+	
+	@Test
+	/*
+	 * Attempt to test remove carriage on departing train with one locomotive and Passenger Car
+	 * 
+	 * @author Yeo Fei Wen
+	 * 
+	 */
+	public void testDepartingTrainWithLocomotiveAndPassengerCarWithRemoveCarriage()
+			throws TrainException{
+		RollingStock currentCarriage = null;
+		Locomotive testLoco = new Locomotive(VALID_TEST_WEIGHT, VALID_CLASSIFICATION_TYPE);
+		testTrain.addCarriage(testLoco);
+		PassengerCar testPassenger = new PassengerCar(VALID_TEST_WEIGHT, VALID_NUM_OF_BOARDING_PASSENGERS);
+				testTrain.addCarriage(testPassenger);
+				currentCarriage = testTrain.firstCarriage();
+				assertEquals(currentCarriage, testLoco);
+				currentCarriage = testTrain.nextCarriage();
+				assertEquals(currentCarriage,testPassenger);
+				testTrain.removeCarriage();
+				assertEquals(testTrain.firstCarriage(), testLoco);
+				assertEquals(testTrain.nextCarriage(),null);
+	}
+	
+	@Test
+	/*
+	 * Attempt to test remove carriage on departing train with one locomotive and Freight Car
+	 * 
+	 * @author Yeo Fei Wen
+	 * 
+	 */
+	public void testDepartingTrainWithLocomotiveAndFreightCarWithRemoveCarriage()
+			throws TrainException{
+		RollingStock currentCarriage = null;
+		Locomotive testLoco = new Locomotive(VALID_TEST_WEIGHT, VALID_CLASSIFICATION_TYPE);
+		testTrain.addCarriage(testLoco);
+		FreightCar testFreight = new FreightCar(VALID_TEST_WEIGHT, VALID_GOODS_TYPE);
+				testTrain.addCarriage(testFreight);
+				currentCarriage = testTrain.firstCarriage();
+				assertEquals(currentCarriage, testLoco);
+				currentCarriage = testTrain.nextCarriage();
+				assertEquals(currentCarriage,testFreight);
+				testTrain.removeCarriage();
+				assertEquals(testTrain.firstCarriage(), testLoco);
+				assertEquals(testTrain.nextCarriage(),null);		
+	}
+	
+	@Test(expected = TrainException.class)
+	/*
+	 * Attempt to remove carraige when there are passengers on board
+	 * 
+	 * @author Yeo Fei Wen
+	 * 
+	 */
+	public void testDepartingTrainWithLocomotiveAndPassengerCarWithPassengerWithRemoveCarriage()
+			throws TrainException{
+		Locomotive testLoco = new Locomotive(VALID_TEST_WEIGHT, VALID_CLASSIFICATION_TYPE);
+		testTrain.addCarriage(testLoco);
+		PassengerCar testPassenger = new PassengerCar(VALID_TEST_WEIGHT, VALID_NUM_OF_BOARDING_PASSENGERS);
+		testTrain.addCarriage(testPassenger);
+		testTrain.board(ONE_VALUE);
+		testTrain.removeCarriage();
+	}
 }

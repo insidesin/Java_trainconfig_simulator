@@ -64,12 +64,12 @@ public class Locomotive extends RollingStock {
 					+ classificationError);
 		}
 
-		if (((powerValue * enginePower) - grossWeight) <= 0) {
+		/*if (((powerValue * enginePower) - grossWeight) <= 0) {
 			throw new TrainException(
 					"Locomotive cannot generate the amount of power to pull and move. "
 							+ "Please use a higher power class higher than : "
 							+ powerValue);
-		}
+		}*/
 
 		this.locomotiveClassification = classification;
 
@@ -87,7 +87,7 @@ public class Locomotive extends RollingStock {
 	 * @return The locomotive's "pulling power" in tonnes.
 	 */
 	public Integer power() {
-		return (powerValue * enginePower) - this.getGrossWeight();
+		return ((powerValue * enginePower) - this.getGrossWeight());
 	}
 
 	@Override
