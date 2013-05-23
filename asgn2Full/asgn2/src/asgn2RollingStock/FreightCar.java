@@ -27,7 +27,7 @@ public class FreightCar extends RollingStock {
 			throws TrainException {
 		super(grossWeight);
 
-		if (goodsType != "G" && goodsType != "R" && goodsType != "D")
+		if (!goodsType.equals("G") && !goodsType.equals("R") && !goodsType.equals("D"))
 			throw new TrainException("Invalid goods type. Must define using "
 					+ "G (General), R (Refrigerated) or D (Dangerous) goods.");
 
