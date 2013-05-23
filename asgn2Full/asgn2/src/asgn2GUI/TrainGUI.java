@@ -26,6 +26,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.util.Stack;
+import javax.swing.JTextArea;
 
 public class TrainGUI extends JFrame implements ActionListener {
 
@@ -39,7 +40,12 @@ public class TrainGUI extends JFrame implements ActionListener {
 
 	Stack<Canvas> carriagePanelStack;
 	
+	private int totalWeight = 0;
+
 	private JComboBox<String> cmbBoxCarriageType;
+	private JLabel lblPullingPower;
+	private JLabel lblTotalWeight;
+	private JLabel lblTrainMoveStatus;
 	private JLabel lblPowerClass;
 	private JTextField txtBoxPowerInput;
 	private JLabel lblSeatCount;
@@ -50,9 +56,10 @@ public class TrainGUI extends JFrame implements ActionListener {
 	private JSpinner txtBoxWeightInput;
 
 	private JPanel carriagePanel;
-	private JPanel carriageEditPanel;
+	private JPanel carriageEditPanelDriver;
 
 	private DepartingTrain trainConfiguration;
+	private RollingStock currentCarriage;
 
 	/**
 	 * @param arg0
@@ -64,13 +71,6 @@ public class TrainGUI extends JFrame implements ActionListener {
 		createGUI();
 		trainConfiguration = new DepartingTrain();
 		carriagePanelStack = new Stack<Canvas>();
-		// try {
-		// trainConfiguration.addCarriage(new Locomotive(50, "4S"));
-		// trainConfiguration.addCarriage(new PassengerCar(50, 20));
-		// trainConfiguration.addCarriage(new FreightCar(50, "G"));
-		// } catch (TrainException e) {
-		// e.printStackTrace();
-		// }
 	}
 
 	private void createGUI() {
@@ -95,29 +95,6 @@ public class TrainGUI extends JFrame implements ActionListener {
 		carriageScrollPane.setViewportView(carriagePanel);
 		carriagePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
-		// Canvas canvas_1 = new Canvas();
-		// canvas_1.setPreferredSize(new Dimension(100, 100));
-		// carriagePanel.add(canvas_1);
-		// canvas_1.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		//
-		// Canvas canvas_2 = new Canvas();
-		// canvas_2.figure = 1;
-		// canvas_2.setPreferredSize(new Dimension(100, 100));
-		// carriagePanel.add(canvas_2);
-		// canvas_2.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		//
-		// Canvas canvas_3 = new Canvas();
-		// canvas_3.figure = 2;
-		// canvas_3.setPreferredSize(new Dimension(100, 100));
-		// carriagePanel.add(canvas_3);
-		// canvas_3.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		//
-		// Canvas canvas_4 = new Canvas();
-		// canvas_4.figure = 2;
-		// canvas_4.setPreferredSize(new Dimension(100, 100));
-		// carriagePanel.add(canvas_4);
-		// canvas_4.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-
 		JPanel contentPanel = new JPanel();
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.X_AXIS));
@@ -135,18 +112,42 @@ public class TrainGUI extends JFrame implements ActionListener {
 		leftDriverPanelFloatRight.setMinimumSize(new Dimension(350, 10));
 		leftDriverPanelFloatRight.setLayout(new BorderLayout(0, 0));
 
-		JPanel carriageInfoPanel = new JPanel();
-		carriageInfoPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED,
+		JPanel carriageInfoPanelDriver = new JPanel();
+		carriageInfoPanelDriver.setPreferredSize(new Dimension(10, 110));
+		carriageInfoPanelDriver.setBorder(new EtchedBorder(EtchedBorder.LOWERED,
 				null, null));
-		FlowLayout fl_carriageInfoPanel = (FlowLayout) carriageInfoPanel
-				.getLayout();
-		fl_carriageInfoPanel.setVgap(25);
-		fl_carriageInfoPanel.setHgap(25);
-		leftDriverPanelFloatRight.add(carriageInfoPanel, BorderLayout.NORTH);
+		leftDriverPanelFloatRight.add(carriageInfoPanelDriver, BorderLayout.NORTH);
+		carriageInfoPanelDriver.setLayout(null);
+		
+		JLabel lblTrainWeightTitle = new JLabel("Train weight (t):");
+		lblTrainWeightTitle.setBounds(12, 12, 100, 16);
+		carriageInfoPanelDriver.add(lblTrainWeightTitle);
+		
+		lblTotalWeight = new JLabel();
+		lblTotalWeight.setBounds(119, 12, 60, 16);
+		carriageInfoPanelDriver.add(lblTotalWeight);
+		
+		JLabel lblPullingPowerTitle = new JLabel("Pulling power (t):");
+		lblPullingPowerTitle.setBounds(191, 12, 100, 16);
+		carriageInfoPanelDriver.add(lblPullingPowerTitle);
+		
+		lblPullingPower = new JLabel();
+		lblPullingPower.setBounds(299, 12, 60, 16);
+		carriageInfoPanelDriver.add(lblPullingPower);
+		
+		JLabel lblCanTheTrain = new JLabel("Can the train move?");
+		lblCanTheTrain.setFont(new Font("Dialog", Font.BOLD, 14));
+		lblCanTheTrain.setBounds(72, 71, 154, 31);
+		carriageInfoPanelDriver.add(lblCanTheTrain);
+		
+		lblTrainMoveStatus = new JLabel();
+		lblTrainMoveStatus.setFont(new Font("Dialog", Font.BOLD, 16));
+		lblTrainMoveStatus.setBounds(231, 71, 60, 31);
+		carriageInfoPanelDriver.add(lblTrainMoveStatus);
 
-		carriageEditPanel = new JPanel();
-		leftDriverPanelFloatRight.add(carriageEditPanel, BorderLayout.CENTER);
-		carriageEditPanel.setLayout(null);
+		carriageEditPanelDriver = new JPanel();
+		leftDriverPanelFloatRight.add(carriageEditPanelDriver, BorderLayout.CENTER);
+		carriageEditPanelDriver.setLayout(null);
 
 		// Select a carriage Type combo box
 		cmbBoxCarriageType = new JComboBox<String>();
@@ -180,62 +181,62 @@ public class TrainGUI extends JFrame implements ActionListener {
 		cmbBoxCarriageType.setModel(new DefaultComboBoxModel<String>(
 				new String[] { "Enter a carriage type.", "Locomotive",
 						"PassengerCar", "FreightCar" }));
-		cmbBoxCarriageType.setBounds(12, 97, 163, 25);
-		carriageEditPanel.add(cmbBoxCarriageType);
+		cmbBoxCarriageType.setBounds(12, 42, 163, 25);
+		carriageEditPanelDriver.add(cmbBoxCarriageType);
 
 		// PowerClass label
 		lblPowerClass = new JLabel("Power class:");
 		lblPowerClass.setVisible(false);
-		lblPowerClass.setBounds(12, 134, 92, 16);
-		carriageEditPanel.add(lblPowerClass);
+		lblPowerClass.setBounds(12, 79, 92, 16);
+		carriageEditPanelDriver.add(lblPowerClass);
 
 		// PowerClass input box
 		txtBoxPowerInput = new JTextField();
 		txtBoxPowerInput.setVisible(false);
-		txtBoxPowerInput.setBounds(12, 156, 163, 20);
-		carriageEditPanel.add(txtBoxPowerInput);
+		txtBoxPowerInput.setBounds(12, 101, 163, 20);
+		carriageEditPanelDriver.add(txtBoxPowerInput);
 
 		// Seat count label
 		lblSeatCount = new JLabel("Seat count:");
 		lblSeatCount.setVisible(false);
-		lblSeatCount.setBounds(12, 134, 107, 16);
-		carriageEditPanel.add(lblSeatCount);
+		lblSeatCount.setBounds(12, 79, 107, 16);
+		carriageEditPanelDriver.add(lblSeatCount);
 
 		// Seat count input box
 		txtBoxSeatInput = new JSpinner();
 		txtBoxSeatInput.setVisible(false);
-		txtBoxSeatInput.setBounds(12, 156, 163, 20);
-		carriageEditPanel.add(txtBoxSeatInput);
+		txtBoxSeatInput.setBounds(12, 101, 163, 20);
+		carriageEditPanelDriver.add(txtBoxSeatInput);
 
 		// Goods type label
 		lblGoodsType = new JLabel("Goods Type:");
 		lblGoodsType.setVisible(false);
-		lblGoodsType.setBounds(12, 134, 124, 16);
-		carriageEditPanel.add(lblGoodsType);
+		lblGoodsType.setBounds(12, 79, 124, 16);
+		carriageEditPanelDriver.add(lblGoodsType);
 
 		// Goods type input box
 		txtBoxGoodsInput = new JTextField();
 		txtBoxGoodsInput.setVisible(false);
-		txtBoxGoodsInput.setBounds(12, 156, 163, 20);
-		carriageEditPanel.add(txtBoxGoodsInput);
+		txtBoxGoodsInput.setBounds(12, 101, 163, 20);
+		carriageEditPanelDriver.add(txtBoxGoodsInput);
 
 		// Weight label
 		lblWeight = new JLabel("Weight (kg):");
 		lblWeight.setVisible(false);
-		lblWeight.setBounds(187, 134, 124, 16);
-		carriageEditPanel.add(lblWeight);
+		lblWeight.setBounds(187, 79, 124, 16);
+		carriageEditPanelDriver.add(lblWeight);
 
 		// Weight input box
 		txtBoxWeightInput = new JSpinner();
 		txtBoxWeightInput.setVisible(false);
-		txtBoxWeightInput.setBounds(187, 156, 163, 20);
-		carriageEditPanel.add(txtBoxWeightInput);
+		txtBoxWeightInput.setBounds(187, 101, 163, 20);
+		carriageEditPanelDriver.add(txtBoxWeightInput);
 
 		// Add Carriage to Train label
 		JLabel lblAddCarriageTitle = new JLabel("Add a Carriage to Train:");
 		lblAddCarriageTitle.setFont(new Font("Dialog", Font.BOLD, 14));
-		lblAddCarriageTitle.setBounds(12, 67, 217, 25);
-		carriageEditPanel.add(lblAddCarriageTitle);
+		lblAddCarriageTitle.setBounds(12, 12, 217, 25);
+		carriageEditPanelDriver.add(lblAddCarriageTitle);
 
 		// Add Carriage button
 		JButton btnAddCarriage = new JButton("Add Carriage");
@@ -265,12 +266,22 @@ public class TrainGUI extends JFrame implements ActionListener {
 					}
 				} catch (TrainException e) {
 					e.printStackTrace();
+					return;
 				}
 
 				// Find the train recently created so we can work with it
 				// multiple times.
-				RollingStock currentCarriage = trainConfiguration
-						.nextCarriage();
+				if (carriagePanelStack.size() == 0)
+					currentCarriage = trainConfiguration.firstCarriage();
+				else
+					currentCarriage = trainConfiguration.nextCarriage();
+
+				// Stop the possible null carriage creating further exceptions.
+				if (currentCarriage == null)
+					return;
+				
+				totalWeight += currentCarriage.getGrossWeight();
+				lblTotalWeight.setText("" + totalWeight);
 
 				// Display their text readable description.
 				newCarriageCanvas.getCarriageLabel().setText(
@@ -282,6 +293,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 							((Locomotive) currentCarriage).power());
 					newCarriageCanvas.getProgressBar().setValue(
 							currentCarriage.getGrossWeight());
+					lblPullingPower.setText("" + ((Locomotive) currentCarriage).power());
 				} else if (currentCarriage instanceof PassengerCar) {
 					newCarriageCanvas.getProgressBar().setMaximum(
 							((PassengerCar) currentCarriage).numberOfSeats());
@@ -292,80 +304,110 @@ public class TrainGUI extends JFrame implements ActionListener {
 							currentCarriage.getGrossWeight());
 				}
 
-//				//Add to logical list.
-//				carriagePanelStack.push(newCarriageCanvas);
-				
+				// Add to logical list.
+				carriagePanelStack.push(newCarriageCanvas);
+
 				carriagePanel.add(newCarriageCanvas);
 				newCarriageCanvas.setLayout(new FlowLayout(FlowLayout.LEFT, 0,
 						0));
+
+				//Update TrainCanMove status
+				if(trainConfiguration.trainCanMove()) {
+					lblTrainMoveStatus.setText("Yes");
+					lblTrainMoveStatus.setForeground(Color.GREEN);
+				} else {
+					lblTrainMoveStatus.setText("No");
+					lblTrainMoveStatus.setForeground(Color.RED);
+				}
+				
 				validate();
 				repaint();
 			}
 		});
-		btnAddCarriage.setBounds(12, 188, 163, 39);
-		carriageEditPanel.add(btnAddCarriage);
+		btnAddCarriage.setBounds(12, 133, 163, 39);
+		carriageEditPanelDriver.add(btnAddCarriage);
 
 		// Remove Carriage Button
 		JButton btnRemoveCarriage = new JButton("Remove Carriage");
 		btnRemoveCarriage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-//				try {
-//					//Remove from both logical list and physical GUI.
-//					if(!carriagePanelStack.isEmpty()) {
-//						trainConfiguration.removeCarriage();
-//						carriagePanel.remove(carriagePanelStack.peek());
-//						carriagePanelStack.pop();
-//					}
-//					validate();
-//					repaint();
-//				} catch (TrainException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					// Remove from both logical list and physical GUI.
+					if (!carriagePanelStack.isEmpty()) {
+						// Remove Carriage from both physical window and logical
+						// configuration stack.
+						trainConfiguration.removeCarriage();
+						carriagePanel.remove(carriagePanelStack.peek());
+						carriagePanelStack.pop();
+						
+						totalWeight -= currentCarriage.getGrossWeight();
+
+						//Return to the carriage before.
+						trainConfiguration.firstCarriage();
+						for (int i = 0; i < carriagePanelStack.size(); i++)
+							trainConfiguration.nextCarriage();
+						
+						//Update TrainCanMove status
+						if(trainConfiguration.trainCanMove()) {
+							lblTrainMoveStatus.setText("Yes");
+							lblTrainMoveStatus.setForeground(Color.GREEN);
+						} else {
+							lblTrainMoveStatus.setText("No");
+							lblTrainMoveStatus.setForeground(Color.RED);
+						}
+						
+						lblTotalWeight.setText("" + totalWeight);
+					}
+					validate();
+					repaint();
+				} catch (TrainException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
-		btnRemoveCarriage.setBounds(187, 188, 163, 39);
-		carriageEditPanel.add(btnRemoveCarriage);
+		btnRemoveCarriage.setBounds(187, 133, 163, 39);
+		carriageEditPanelDriver.add(btnRemoveCarriage);
 
-		JPanel panel_8 = new JPanel();
-		contentPanel.add(panel_8);
-		panel_8.setLayout(new BorderLayout(0, 0));
+		JPanel rightConductorPanel = new JPanel();
+		contentPanel.add(rightConductorPanel);
+		rightConductorPanel.setLayout(new BorderLayout(0, 0));
 
-		JPanel panel_1 = new JPanel();
-		panel_8.add(panel_1, BorderLayout.WEST);
-		panel_1.setAlignmentX(Component.LEFT_ALIGNMENT);
-		panel_1.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panel_1.setPreferredSize(new Dimension(375, 10));
-		panel_1.setLayout(new BorderLayout(0, 0));
+		JPanel rightConductorPanelFloatLeft = new JPanel();
+		rightConductorPanel.add(rightConductorPanelFloatLeft, BorderLayout.WEST);
+		rightConductorPanelFloatLeft.setAlignmentX(Component.LEFT_ALIGNMENT);
+		rightConductorPanelFloatLeft.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		rightConductorPanelFloatLeft.setPreferredSize(new Dimension(375, 10));
+		rightConductorPanelFloatLeft.setLayout(new BorderLayout(0, 0));
 
-		JPanel panel_3 = new JPanel();
-		panel_3.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		FlowLayout flowLayout_1 = (FlowLayout) panel_3.getLayout();
-		flowLayout_1.setVgap(25);
-		flowLayout_1.setHgap(25);
-		panel_1.add(panel_3, BorderLayout.NORTH);
+		JPanel carriageInfoPanelConductor = new JPanel();
+		carriageInfoPanelConductor.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		FlowLayout fl_carriageInfoPanelConductor = (FlowLayout) carriageInfoPanelConductor.getLayout();
+		fl_carriageInfoPanelConductor.setVgap(25);
+		fl_carriageInfoPanelConductor.setHgap(25);
+		rightConductorPanelFloatLeft.add(carriageInfoPanelConductor, BorderLayout.NORTH);
 
-		JPanel panel_6 = new JPanel();
-		panel_6.setLayout(null);
-		panel_1.add(panel_6, BorderLayout.CENTER);
+		JPanel carriageEditPanelConductor = new JPanel();
+		carriageEditPanelConductor.setLayout(null);
+		rightConductorPanelFloatLeft.add(carriageEditPanelConductor, BorderLayout.CENTER);
 
 		JButton btnBoard = new JButton("Board");
 		btnBoard.setBounds(12, 188, 99, 39);
-		panel_6.add(btnBoard);
+		carriageEditPanelConductor.add(btnBoard);
 
 		JButton btnReset = new JButton("Reset");
 		btnReset.setBounds(196, 188, 163, 39);
-		panel_6.add(btnReset);
+		carriageEditPanelConductor.add(btnReset);
 
-		JSpinner spinner = new JSpinner();
-		spinner.setFont(new Font("Dialog", Font.BOLD, 14));
-		spinner.setBounds(108, 188, 64, 39);
-		panel_6.add(spinner);
+		JSpinner txtBoxBoardAmountInput = new JSpinner();
+		txtBoxBoardAmountInput.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtBoxBoardAmountInput.setBounds(108, 188, 64, 39);
+		carriageEditPanelConductor.add(txtBoxBoardAmountInput);
 
 		JLabel lblBoardPassengers = new JLabel("Board Passengers:");
 		lblBoardPassengers.setFont(new Font("Dialog", Font.BOLD, 14));
 		lblBoardPassengers.setBounds(12, 161, 160, 19);
-		panel_6.add(lblBoardPassengers);
+		carriageEditPanelConductor.add(lblBoardPassengers);
 
 		// Exception Panel
 		JPanel exceptionPanel = new JPanel();
@@ -384,7 +426,6 @@ public class TrainGUI extends JFrame implements ActionListener {
 		exceptionTextPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED,
 				null, null));
 		exceptionPanel.add(exceptionTextPane);
-
 	}
 
 	private void hideNewCarriageInput() {
