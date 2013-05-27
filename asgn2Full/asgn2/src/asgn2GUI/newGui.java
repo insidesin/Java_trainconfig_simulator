@@ -26,6 +26,7 @@ import javax.swing.SpringLayout;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
 import java.text.NumberFormat;
+import java.util.Stack;
 import java.util.Vector;
 
 import javax.swing.border.MatteBorder;
@@ -41,6 +42,7 @@ import asgn2Exceptions.TrainException;
 import asgn2RollingStock.FreightCar;
 import asgn2RollingStock.Locomotive;
 import asgn2RollingStock.PassengerCar;
+import asgn2RollingStock.RollingStock;
 import asgn2Train.DepartingTrain;
 import java.awt.Font;
 
@@ -102,7 +104,10 @@ public class newGui extends JFrame implements ActionListener {
 	private int maxPassengerCapacity;
 	private int spaceAvaliable;
 	
+	private RollingStock currentCarriage;
+	
 	private Vector<Integer> boardComboBoxItems = new Vector<Integer>();
+	private Stack<Canvas> carriagePanelStack = new Stack<Canvas>();
 	
 	//private NumberFormat NUM_ONLY = new NumberFormat;
 
@@ -468,6 +473,13 @@ public class newGui extends JFrame implements ActionListener {
 			maxPassengerCapacity = 0;
 			spaceAvaliable = 0;
 			
+			// Remove Carriage from physical window and logical line-up.
+			carriagePanel.removeAll();
+			carriagePanelStack.clear();
+			
+			validate();
+			repaint();
+			
 			break;
 		
 		//Add Locomotive Button Action
@@ -519,6 +531,36 @@ public class newGui extends JFrame implements ActionListener {
 			passengerLimitField.setEnabled(true);
 			passengerWeight.setEnabled(true);
 			
+			// Find the train recently created so we can work with it
+			// multiple times.
+			if (carriagePanelStack.size() == 0)
+				currentCarriage = departingTrain.firstCarriage();
+			else
+				currentCarriage = departingTrain.nextCarriage();
+			
+			Canvas newCarriageCanvasLoco = new Canvas();
+			
+			// Display their text readable description.
+			newCarriageCanvasLoco.getCarriageLabel().setText(
+					currentCarriage.toString());
+
+			// Check their capacity and display progressBar accordingly.
+			newCarriageCanvasLoco.getProgressBar().setMaximum(
+					((Locomotive) currentCarriage).power());
+			newCarriageCanvasLoco.getProgressBar().setValue(
+					currentCarriage.getGrossWeight());
+
+			// Add to logical list.
+			carriagePanelStack.push(newCarriageCanvasLoco);
+
+			newCarriageCanvasLoco.figure = LOCOMOTIVE_PAINT;
+			
+			carriagePanel.add(newCarriageCanvasLoco);
+			newCarriageCanvasLoco.setLayout(new FlowLayout(FlowLayout.LEFT, 0,
+					0));
+			
+			validate();
+			repaint();
 			
 			break;
 			
@@ -550,6 +592,38 @@ public class newGui extends JFrame implements ActionListener {
 				// TODO Auto-generated catch block
 				ErrorMessageBox.append(e1.getMessage());
 			}
+			
+			// Find the train recently created so we can work with it
+			// multiple times.
+			if (carriagePanelStack.size() == 0)
+				currentCarriage = departingTrain.firstCarriage();
+			else
+				currentCarriage = departingTrain.nextCarriage();
+			
+			Canvas newCarriageCanvasFreight = new Canvas();
+			
+			// Display their text readable description.
+			newCarriageCanvasFreight.getCarriageLabel().setText(
+					currentCarriage.toString());
+
+			// Check their capacity and display progressBar accordingly.
+			newCarriageCanvasFreight.getProgressBar().setMaximum(
+					currentCarriage.getGrossWeight());
+			newCarriageCanvasFreight.getProgressBar().setValue(
+					currentCarriage.getGrossWeight());
+
+			// Add to logical list.
+			carriagePanelStack.push(newCarriageCanvasFreight);
+			
+			newCarriageCanvasFreight.figure = FREIGHTCAR_PAINT;
+
+			carriagePanel.add(newCarriageCanvasFreight);
+			newCarriageCanvasFreight.setLayout(new FlowLayout(FlowLayout.LEFT, 0,
+					0));
+			
+			validate();
+			repaint();
+			
 			break;
 			
 		
@@ -590,6 +664,35 @@ public class newGui extends JFrame implements ActionListener {
 			boardComboBox.setSelectedIndex(spaceAvaliable);
 			boardComboBox.setSelectedIndex(0);
 			
+			// Find the train recently created so we can work with it
+			// multiple times.
+			if (carriagePanelStack.size() == 0)
+				currentCarriage = departingTrain.firstCarriage();
+			else
+				currentCarriage = departingTrain.nextCarriage();
+			
+			Canvas newCarriageCanvasPassenger = new Canvas();
+			
+			// Display their text readable description.
+			newCarriageCanvasPassenger.getCarriageLabel().setText(
+					currentCarriage.toString());
+
+			// Check their capacity and display progressBar accordingly.
+			newCarriageCanvasPassenger.getProgressBar().setMaximum(
+						((PassengerCar) currentCarriage).numberOfSeats());
+
+			// Add to logical list.
+			carriagePanelStack.push(newCarriageCanvasPassenger);
+
+			newCarriageCanvasPassenger.figure = PASSENGERCAR_PAINT;
+			
+			carriagePanel.add(newCarriageCanvasPassenger);
+			newCarriageCanvasPassenger.setLayout(new FlowLayout(FlowLayout.LEFT, 0,
+					0));
+			
+			validate();
+			repaint();
+			
 			break;
 		
 		//Remove Carraige Button Action
@@ -606,6 +709,12 @@ public class newGui extends JFrame implements ActionListener {
 				removeCarraigeBtn.setEnabled(true);
 			}
 		
+			// Remove Carriage from physical window and logical line-up.
+			carriagePanel.remove(carriagePanelStack.peek());
+			carriagePanelStack.pop();
+			
+			validate();
+			repaint();
 			
 			break;
 			
@@ -621,7 +730,7 @@ public class newGui extends JFrame implements ActionListener {
 			
 			
 			
-			;
+			break;
 		}
 		
 	}
