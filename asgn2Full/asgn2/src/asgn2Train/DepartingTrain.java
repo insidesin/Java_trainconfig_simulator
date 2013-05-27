@@ -21,6 +21,11 @@ public class DepartingTrain extends Object {
 		trainConfiguration = new Stack<RollingStock>();
 	}
 
+	/**
+	 * 
+	 * @param newCarriage
+	 * @throws TrainException
+	 */
 	public void addCarriage(RollingStock newCarriage) throws TrainException {
 		if (numberOnBoard() != 0)
 			throw new TrainException(
@@ -46,6 +51,10 @@ public class DepartingTrain extends Object {
 		trainConfiguration.push(newCarriage);
 	}
 
+	/**
+	 * 
+	 * @throws TrainException
+	 */
 	public void removeCarriage() throws TrainException {
 		if (this.numberOnBoard() != 0) {
 			throw new TrainException(
@@ -59,6 +68,10 @@ public class DepartingTrain extends Object {
 		trainConfiguration.pop();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public RollingStock firstCarriage() {
 		if (trainConfiguration.isEmpty())
 			return null;
@@ -68,6 +81,10 @@ public class DepartingTrain extends Object {
 		return trainConfiguration.get(0);
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public RollingStock nextCarriage() {
 		if (trainConfiguration.isEmpty())
 			return null;
@@ -82,6 +99,10 @@ public class DepartingTrain extends Object {
 		return trainConfiguration.get(configurationIndex - 1);
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public Integer numberOnBoard() {
 		int totalPassengerCount = 0;
 		for (int i = 0; i < trainConfiguration.size(); i++) {
@@ -93,6 +114,10 @@ public class DepartingTrain extends Object {
 		return totalPassengerCount;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public Integer numberOfSeats() {
 		int totalSeatCount = 0;
 		for (int i = 0; i < trainConfiguration.size(); i++) {
@@ -104,14 +129,21 @@ public class DepartingTrain extends Object {
 		return totalSeatCount;
 	}
 
+	/**
+	 * 
+	 * @param newPassengers
+	 * @return
+	 * @throws TrainException
+	 */
 	public Integer board(Integer newPassengers) throws TrainException {
 		if (newPassengers < 0)
 			throw new TrainException("Cannot board a negative passenger count.");
-
-		Integer passengersToBoardTrain = newPassengers;
-
-		for (int i = 0; i < trainConfiguration.size(); i++) {
-			if (trainConfiguration.get(i) instanceof PassengerCar) {
+		
+		Integer passengersToBoardTrain = newPassengers;		
+		
+		for (int i = 0; i < trainConfiguration.size(); i++) {			
+			
+			if (trainConfiguration.get(i) instanceof PassengerCar ) {
 				passengersToBoardTrain = ((PassengerCar) trainConfiguration
 						.get(i)).board(passengersToBoardTrain);
 			}

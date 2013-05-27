@@ -62,13 +62,21 @@ public class PassengerCar extends RollingStock {
 					"Number of passengers cannot be a negative. Only 0 or more can board.");
 		
 		Integer unableToBoardPassengers = 0;
-
+		
+		
 		if((onBoardPassengers + newPassengers) <= numOfSeats) {
 			this.onBoardPassengers += newPassengers;
-		} else {
+		} else{ //if(((onBoardPassengers + newPassengers) % numOfSeats) == 0){
+			unableToBoardPassengers = ((onBoardPassengers + newPassengers) - numOfSeats);
+			this.onBoardPassengers = numOfSeats;
+			System.out.println("THIS IS:" + unableToBoardPassengers);
+		}/*else{
 			unableToBoardPassengers = ((onBoardPassengers + newPassengers) % numOfSeats);
 			this.onBoardPassengers = numOfSeats;
-		}
+			System.out.println("THAT IS:" + unableToBoardPassengers);
+		}*/
+		
+		//System.out.println(unableToBoardPassengers);
 		return unableToBoardPassengers;
 	}
 
