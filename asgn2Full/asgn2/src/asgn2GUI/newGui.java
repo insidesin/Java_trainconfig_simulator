@@ -465,6 +465,7 @@ public class newGui extends JFrame implements ActionListener {
 		//Add Locomotive Button Action
 		case "Add Locomotive":
 			
+			//checks that input for the locomotive weight
 			if(locoWeightField.getText().equalsIgnoreCase("")){
 				ErrorMessageBox.append("Please input a value into locomotive weight");
 			}else if(Integer.parseInt(locoWeightField.getText()) <= 0){
@@ -473,12 +474,13 @@ public class newGui extends JFrame implements ActionListener {
 				StringBuilder locomotivePowerToString = new StringBuilder();
 				int newLocoWeight = 0;
 				
+				//assigns the string value for power rating
 				int locomotivePowerRate = Integer.parseInt((String) powerRating.getSelectedItem());
 				locomotivePowerToString.append("");
 				locomotivePowerToString.append(locomotivePowerRate);
 				String engineTypeToSingleChar = "";
 				
-				
+				//assigns the string value for the engine type
 				if(engineType.getSelectedIndex() == 0){
 					engineTypeToSingleChar = "D";
 				}else if(engineType.getSelectedIndex() == 1){
@@ -487,6 +489,8 @@ public class newGui extends JFrame implements ActionListener {
 					engineTypeToSingleChar = "E";
 				}
 				
+				//combines the power rating and engine type into a
+				//valid classification string
 				String locomotiveClassification = locomotivePowerToString.toString() + engineTypeToSingleChar;
 				
 				
@@ -501,8 +505,13 @@ public class newGui extends JFrame implements ActionListener {
 				newLocoWeight = Integer.parseInt(locoWeightField.getText());
 				totalGrossWeight += newLocoWeight;	
 				
+				//Attempt to create a new locomotive based off the
+				//user input values
 				try {
 					departingTrain.addCarriage(new Locomotive(newLocoWeight, locomotiveClassification));
+					
+					//enables the valid actions that the user
+					//have after adding a locomotive
 					locomotiveSetupLabel.setEnabled(false);
 					addLocomotiveBtn.setEnabled(false);
 					addFreightCarBtn.setEnabled(true);
@@ -557,7 +566,7 @@ public class newGui extends JFrame implements ActionListener {
 				validate();
 				repaint();
 				
-				//disableWhenTrainCannotMove();
+				//trainDriverControls();
 			}
 			
 			
@@ -657,7 +666,7 @@ public class newGui extends JFrame implements ActionListener {
 				validate();
 				repaint();
 			
-				disableWhenTrainCannotMove();
+				trainDriverControls(departingTrain.trainCanMove(),e);
 			}
 			break;
 			
@@ -684,16 +693,17 @@ public class newGui extends JFrame implements ActionListener {
 				}
 				
 				passengerCapacity = Integer.parseInt(passengerLimitField.getText());
-				maxPassengerCapacity += passengerCapacity;
+				
 				newPassengerWeight = Integer.parseInt(passengerWeight.getText());
 				totalGrossWeight += newPassengerWeight;
 				
 				//Set the number of passengers allowed to board
-				boardComboBox.removeAllItems();
-				updateBoardComboBox();
+				
 				
 				try {
 					departingTrain.addCarriage(new PassengerCar(newPassengerWeight, passengerCapacity));
+					updateBoardComboBox();
+					
 				} catch (TrainException e1) {
 					ErrorMessageBox.append(e1.getMessage());
 				}
@@ -702,7 +712,7 @@ public class newGui extends JFrame implements ActionListener {
 				boardComboBox.setSelectedIndex(spaceAvaliable);
 				boardComboBox.setSelectedIndex(0);
 				boardBtn.setEnabled(true);
-				
+
 				// Find the train recently created so we can work with it
 				// multiple times.
 				if (carriagePanelStack.size() == 0){
@@ -733,11 +743,12 @@ public class newGui extends JFrame implements ActionListener {
 						0));
 				
 				updateLocomotiveProgressBar();
+				trainDriverControls(departingTrain.trainCanMove(),e);
 				
 				validate();
 				repaint();
 				
-				disableWhenTrainCannotMove();
+				
 
 			}
 			
@@ -757,15 +768,30 @@ public class newGui extends JFrame implements ActionListener {
 			
 			//try to remove a carriage from departing train
 			try{
-				do{
-					currentCarriage = departingTrain.firstCarriage();
-					currentCarriage = departingTrain.nextCarriage();
-				}while(departingTrain.nextCarriage() != null && currentCarriage == null);
 				
+				
+				currentCarriage = departingTrain.firstCarriage();
+				
+				//set the current carriage to the last carriage in the train
+				//if there is more than one rollingstock object
+				if(carriagePanelStack.size() > 1){
+					do{
+						for(int i = 1; i < carriagePanelStack.size();i++){
+							currentCarriage = departingTrain.nextCarriage();
+						}
+					
+					}while(departingTrain.nextCarriage() != null);
+				}
+				
+				//removes the weight of the carriage fromt the total weight
 				if(!(currentCarriage instanceof Locomotive) && carriagePanelStack.size() > 1){
 				totalGrossWeight = totalGrossWeight - currentCarriage.getGrossWeight();
+						
+				}else if(carriagePanelStack.size() == 1){
+					totalGrossWeight = departingTrain.firstCarriage().getGrossWeight();
+					
 				}else{
-					totalGrossWeight = 0;
+					resetToDefaultLayoutAndValues();
 				}
 				
 				departingTrain.removeCarriage();			
@@ -779,8 +805,9 @@ public class newGui extends JFrame implements ActionListener {
 			carriagePanel.remove(carriagePanelStack.peek());
 			carriagePanelStack.pop();
 			
+			trainDriverControls(departingTrain.trainCanMove(),e);
 			updateLocomotiveProgressBar();
-			
+			updateBoardComboBox();
 			validate();
 			repaint();
 			
@@ -808,7 +835,8 @@ public class newGui extends JFrame implements ActionListener {
 			addPassengerCarBtn.setEnabled(false);
 			removeCarraigeBtn.setEnabled(false);
 			
-			
+			//checks through the list of carriages and update the value of
+			//the passenger car/s' progress bar
 			departingTrain.firstCarriage();
 			for(int i = 1; i < carriagePanelStack.size(); i++) {
 				currentCarriage = departingTrain.nextCarriage();
@@ -837,7 +865,10 @@ public class newGui extends JFrame implements ActionListener {
 	 * 
 	 */
 	private void updateBoardComboBox(){
+		maxPassengerCapacity = (int) departingTrain.numberOfSeats();
+		boardComboBox.removeAllItems();
 		int defaultBoardItem = 0;
+		
 		boardComboBoxItems.add(new Integer(defaultBoardItem));
 		spaceAvaliable = maxPassengerCapacity - passengersBoarded;
 		for(int i = 0; i < spaceAvaliable; i++){
@@ -845,9 +876,6 @@ public class newGui extends JFrame implements ActionListener {
 			
 		}
 		boardComboBox.setSelectedIndex(0);
-	
-		
-	
 	}
 	
 	/**
@@ -856,21 +884,36 @@ public class newGui extends JFrame implements ActionListener {
 	 */
 	private void updateLocomotiveProgressBar(){
 		currentCarriage = departingTrain.firstCarriage();
-		if(currentCarriage instanceof Locomotive)
-		carriagePanelStack.get(0).getProgressBar().setValue(totalGrossWeight);
+		if(currentCarriage instanceof Locomotive){
+				carriagePanelStack.get(0).getProgressBar().setMaximum(((Locomotive) departingTrain.firstCarriage()).power());
+				carriagePanelStack.get(0).getProgressBar().setValue(totalGrossWeight);	
+		}
+		
 	}
 	
 	/**
 	 * Ensures that when train cannot move, all the panels
-	 * are disabled
+	 * are disabled, unless a carriage is removed
 	 * 
 	 */
-	private void disableWhenTrainCannotMove(){
-		if(!departingTrain.trainCanMove()){
+	private void trainDriverControls(Boolean trainCanMove, ActionEvent e){
+		if(!trainCanMove){
 			boardBtn.setEnabled(false);
 			addPassengerCarBtn.setEnabled(false);
 			addFreightCarBtn.setEnabled(false);
 			ErrorMessageBox.append("The train is overladen and cannot move.");
+		}else{
+			if(e.getActionCommand() == "Add Freight Car"){
+			addPassengerCarBtn.setEnabled(false);
+			addFreightCarBtn.setEnabled(false);
+			boardBtn.setEnabled(false);
+			}else if(departingTrain.firstCarriage() == null){
+				resetToDefaultLayoutAndValues();
+			}else{
+				addPassengerCarBtn.setEnabled(true);
+				addFreightCarBtn.setEnabled(true);
+				boardBtn.setEnabled(true);
+			}
 		}
 	}
 	
@@ -914,4 +957,5 @@ public class newGui extends JFrame implements ActionListener {
 		spaceAvaliable = 0;
 		trainMaxPull = 0;
 	}
+	
 }
