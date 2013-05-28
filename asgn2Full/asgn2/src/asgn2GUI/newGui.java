@@ -749,7 +749,7 @@ public class newGui extends JFrame implements ActionListener {
 		case "Remove Carraige":
 			
 			//sets the button to false if the remvoed objects a locomotive
-			if(departingTrain.firstCarriage() instanceof Locomotive){
+			if(departingTrain.firstCarriage() instanceof Locomotive && departingTrain.nextCarriage() == null){
 				resetToDefaultLayoutAndValues();
 			}else{
 				removeCarraigeBtn.setEnabled(true);
@@ -757,11 +757,24 @@ public class newGui extends JFrame implements ActionListener {
 			
 			//try to remove a carriage from departing train
 			try{
+				do{
+					currentCarriage = departingTrain.firstCarriage();
+					currentCarriage = departingTrain.nextCarriage();
+				}while(departingTrain.nextCarriage() != null && currentCarriage == null);
+				
+				if(!(currentCarriage instanceof Locomotive) && carriagePanelStack.size() > 1){
+				totalGrossWeight = totalGrossWeight - currentCarriage.getGrossWeight();
+				}else{
+					totalGrossWeight = 0;
+				}
+				
 				departingTrain.removeCarriage();			
 			}catch(TrainException e1){
 				ErrorMessageBox.append(e1.getMessage());
 			}
-
+			
+			
+			
 			// Remove Carriage from physical window and logical line-up.
 			carriagePanel.remove(carriagePanelStack.peek());
 			carriagePanelStack.pop();
@@ -792,6 +805,8 @@ public class newGui extends JFrame implements ActionListener {
 			}
 
 			addFreightCarBtn.setEnabled(false);
+			addPassengerCarBtn.setEnabled(false);
+			removeCarraigeBtn.setEnabled(false);
 			
 			
 			departingTrain.firstCarriage();

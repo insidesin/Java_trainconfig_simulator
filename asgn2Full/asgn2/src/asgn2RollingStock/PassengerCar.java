@@ -30,10 +30,6 @@ public class PassengerCar extends RollingStock {
 			throws TrainException {
 		super(grossWeight);
 
-		if (numberOfSeats == null) {
-			throw new TrainException(
-					"Number of seats must be entered and must be a valid Integer.");
-		}
 
 		if (numberOfSeats < 0) {
 			throw new TrainException(

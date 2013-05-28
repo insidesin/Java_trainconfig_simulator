@@ -15,8 +15,7 @@ public abstract class RollingStock extends Object {
 	 *             If the gross weight is not a positive Integer.
 	 */
 	public RollingStock(Integer grossWeight) throws TrainException {
-		if (grossWeight == null)
-			throw new TrainException("Gross weight must be entered.");
+		
 
 		if (grossWeight <= 0)
 			throw new TrainException(

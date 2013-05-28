@@ -162,7 +162,7 @@ public class DepartingTrain extends Object {
 		}
 
 		if ((TrainPower == 0 && totalTrainWeight == 0)
-				|| (TrainPower > totalTrainWeight) && TrainPower > 0) {
+				|| ((TrainPower > totalTrainWeight) && TrainPower > 0)) {
 			return true;
 		} else {
 			return false;

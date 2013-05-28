@@ -77,18 +77,6 @@ public class RollingStockTests {
 
 	@Test(expected = TrainException.class)
 	/*
-	 * Attempt to construct a new FreightCar object with a gross weight of 0,
-	 * which should throw a TrainException.
-	 * 
-	 * @author Jackson Powell
-	 */
-	public void testFreightCarConstructorWithNullGrossWeight()
-			throws TrainException {
-		FreightCar newFreightCar = new FreightCar(null, VALID_GOODS_TYPE);
-	}
-
-	@Test(expected = TrainException.class)
-	/*
 	 * Attempt to construct a new FreightCar object with a valid gross weight
 	 * but an invalid goods type.
 	 * 
@@ -98,18 +86,6 @@ public class RollingStockTests {
 			throws TrainException {
 		FreightCar newFreightCar = new FreightCar(VALID_TEST_WEIGHT,
 				INVALID_GOODS_TYPE);
-	}
-
-	@Test(expected = TrainException.class)
-	/*
-	 * Attempt to construct a new FreightCar object with a valid gross weight
-	 * but a goods type of null.
-	 * 
-	 * @author Jackson Powell
-	 */
-	public void testFreightCarConstructorWithNullGoodsType()
-			throws TrainException {
-		FreightCar newFreightCar = new FreightCar(VALID_TEST_WEIGHT, null);
 	}
 
 	@Test(expected = TrainException.class)
@@ -178,18 +154,6 @@ public class RollingStockTests {
 
 	@Test(expected = TrainException.class)
 	/*
-	 * Attempt to construct a new Locomotive object with null gross weight.
-	 * 
-	 * @author Yeo Fei Wen
-	 */
-	public void testLocomotiveConstructorWithNullGrossWeight()
-			throws TrainException {
-		Locomotive newLocomotive = new Locomotive(null,
-				VALID_CLASSIFICATION_TYPE);
-	}
-
-	@Test(expected = TrainException.class)
-	/*
 	 * Attempt to construct a new Locomotive object with zero gross weight.
 	 * 
 	 * @author Yeo Fei Wen
@@ -214,20 +178,8 @@ public class RollingStockTests {
 
 	@Test(expected = TrainException.class)
 	/*
-	 * Attempt to construct a new Locomotive object with null for
-	 * classification.
-	 * 
-	 * @author Yeo Fei Wen
-	 */
-	public void testLocomotiveConstructorWithNullClassification()
-			throws TrainException {
-		Locomotive newLocomotive = new Locomotive(VALID_TEST_WEIGHT, null);
-	}
-
-	@Test(expected = TrainException.class)
-	/*
-	 * Attempt to construct a new Locomotive object with null for
-	 * classification.
+	 * Attempt to construct a new Locomotive object with invalid string length
+	 * for classification.
 	 * 
 	 * @author Yeo Fei Wen
 	 */
@@ -239,7 +191,7 @@ public class RollingStockTests {
 
 	@Test(expected = TrainException.class)
 	/*
-	 * Attempt to construct a new Locomotive object with null for
+	 * Attempt to construct a new Locomotive object with invalid string length for
 	 * classification.
 	 * 
 	 * @author Yeo Fei Wen
@@ -252,7 +204,7 @@ public class RollingStockTests {
 
 	@Test(expected = TrainException.class)
 	/*
-	 * Attempt to construct a new Locomotive object with null for
+	 * Attempt to construct a new Locomotive object with invalid string value for
 	 * classification.
 	 * 
 	 * @author Yeo Fei Wen
@@ -265,7 +217,7 @@ public class RollingStockTests {
 
 	@Test(expected = TrainException.class)
 	/*
-	 * Attempt to construct a new Locomotive object with null for
+	 * Attempt to construct a new Locomotive object with Invalid classification type for
 	 * classification.
 	 * 
 	 * @author Yeo Fei Wen
@@ -431,24 +383,23 @@ public class RollingStockTests {
 				testPassengerCar.board(VALID_NUM_OF_BOARDING_PASSENGERS));
 	}
 
-	/* FIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIX THIIIIIIIIIIIIIIIIIIIIIS */
 	
-//	@Test
-//	/*
-//	 * Attempt to get the number of passengers who could not get on board the
-//	 * train with number of boarding passengers not exceeding or equal to the
-//	 * current number of seats
-//	 * 
-//	 * @author Yeo Fei Wen
-//	 */
-//	public void testPassengerCarBoardTwiceWithValidArguments() throws TrainException {
-//		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
-//				VALID_NUM_OF_EMPTY_SEATS);
-//		Integer testNumOfBoardingPassengers = 16;
-//		testPassengerCar.board(5);
-//		testPassengerCar.board(11);
-//		assertEquals(testNumOfBoardingPassengers, testPassengerCar.numberOnBoard());
-//	}
+ 	@Test
+ 	/*
+ 	 * Attempt to get the number of passengers who could not get on board the
+ 	 * train with number of boarding passengers not exceeding or equal to the
+ 	 * current number of seats
+ 	 * 
+ 	 * @author Yeo Fei Wen
+ 	 */
+ 	public void testPassengerCarBoardTwiceWithValidArguments() throws TrainException {
+ 		PassengerCar testPassengerCar = new PassengerCar(VALID_TEST_WEIGHT,
+ 				VALID_NUM_OF_EMPTY_SEATS);
+ 		Integer testNumOfBoardingPassengers = 16;
+ 		testPassengerCar.board(5);
+ 		testPassengerCar.board(11);
+ 		assertEquals(testNumOfBoardingPassengers, testPassengerCar.numberOnBoard());
+ 	}
 
 	@Test
 	/*
@@ -465,7 +416,7 @@ public class RollingStockTests {
 		assertEquals(testNumOfBoardingPassengers,
 				testPassengerCar.board(ZERO_VALUE));
 	}
-
+	
 	@Test(expected = TrainException.class)
 	/*
 	 * Attempt to get the number of passengers who could not get on board the

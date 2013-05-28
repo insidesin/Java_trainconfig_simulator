@@ -36,12 +36,6 @@ public class Locomotive extends RollingStock {
 			throws TrainException {
 		super(grossWeight);
 
-		if (classification == null) {
-			throw new TrainException(
-					"A locomotive classification have to be added with these guidelines:"
-							+ classificationError);
-		}
-
 		if (classification.length() != 2) {
 			throw new TrainException(
 					"A locomotive classification have to consist of only two characters. "
