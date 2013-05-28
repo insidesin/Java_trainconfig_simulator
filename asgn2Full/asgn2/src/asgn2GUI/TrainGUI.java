@@ -1,84 +1,140 @@
 package asgn2GUI;
 
-import asgn2Exceptions.TrainException;
-import asgn2RollingStock.*;
-import asgn2Train.DepartingTrain;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.BoxLayout;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JButton;
+import javax.swing.JTextArea;
 import javax.swing.JLabel;
-import javax.swing.JTextPane;
-import javax.swing.border.EtchedBorder;
+import javax.swing.SpringLayout;
+import java.awt.Color;
+import java.util.Stack;
+import java.util.Vector;
+
+
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
-import java.util.Stack;
-import javax.swing.JTextArea;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EtchedBorder;
 
+import asgn2Exceptions.TrainException;
+import asgn2RollingStock.FreightCar;
+import asgn2RollingStock.Locomotive;
+import asgn2RollingStock.PassengerCar;
+import asgn2RollingStock.RollingStock;
+import asgn2Train.DepartingTrain;
+import java.awt.Font;
+
+/**
+ * 
+ * @author Yeo Fei Wen, Jackson Powell
+ *
+ */
 public class TrainGUI extends JFrame implements ActionListener {
-
-	private static final long serialVersionUID = -7031008862559936404L;
-	public static final int WIDTH = 800;
-	public static final int HEIGHT = 600;
-
+	
+	//Static Variables (Magic numbers)
+	private final static int WIDTH = 610;
+	private final static int HEIGHT = 780;
+	
+	//canvas figure variables
 	private static final int LOCOMOTIVE_PAINT = 0;
 	private static final int PASSENGERCAR_PAINT = 1;
 	private static final int FREIGHTCAR_PAINT = 2;
 
-	Stack<Canvas> carriagePanelStack;
-	
-	private int totalWeight = 0;
-
-	private JComboBox<String> cmbBoxCarriageType;
-	private JLabel lblPullingPower;
-	private JLabel lblTotalWeight;
-	private JLabel lblTrainMoveStatus;
-	private JLabel lblPowerClass;
-	private JTextField txtBoxPowerInput;
-	private JLabel lblSeatCount;
-	private JSpinner txtBoxSeatInput;
-	private JLabel lblGoodsType;
-	private JTextField txtBoxGoodsInput;
-	private JLabel lblWeight;
-	private JSpinner txtBoxWeightInput;
-
+	//GUI Panels
+	private JPanel mainPane;
 	private JPanel carriagePanel;
-	private JPanel carriageEditPanelDriver;
+	private JPanel locomotivePanel;
+	private JPanel trainDriverPanel;
+	private JPanel conductorPanel;
+	
+	//GUI Buttons
+	private JButton startTrainBtn;
+	private JButton addLocomotiveBtn;
+	private JButton addPassengerCarBtn;
+	private JButton addFreightCarBtn;
+	private JButton removeCarraigeBtn;
+	private JButton boardBtn;
+	
+	//GUI ComboBox
+	private JComboBox powerRating;
+	private JComboBox engineType;
+	private JComboBox goodsType;
+	private JComboBox boardComboBox;
+	
+	//GUI Text Fields
+	private JTextField locoWeightField;
+	private JTextField freightWeight;
+	private JTextField passengerLimitField;
+	private JTextField passengerWeight;
+	
+	private JLabel locomotiveSetupLabel;
+	private JLabel freightCarSetupLabel;
+	private JLabel passengerCarSetupLabel;
+	private JLabel errorMessageBoxLabel;
+	private JLabel boardLabel;
+	private JLabel totalPassengerLabel;
+	private JLabel totalWeightLabel;
+	private JLabel trainPullingLimitLabel;
+	private JLabel trainCanMoveLabel;
+	
+	//GUI TextArea
+	private JTextArea ErrorMessageBox;
 
-	private DepartingTrain trainConfiguration;
+	//DepartingTrain object declaration
+	private DepartingTrain departingTrain = new DepartingTrain();
+	
+	//Class variables
+	private int totalGrossWeight;
+	private int trainPower;
+	private int passengersBoarded;
+	private int maxPassengerCapacity;
+	private int spaceAvaliable;
+	private int trainMaxPull;
+	
 	private RollingStock currentCarriage;
+	
+	private Vector<Integer> boardComboBoxItems = new Vector<Integer>();
+	private Stack<Canvas> carriagePanelStack = new Stack<Canvas>();
 
 	/**
-	 * @param arg0
-	 * @throws HeadlessException
-	 * @throws TrainException
+	 * Launch the application.
 	 */
-	public TrainGUI(String arg0) throws HeadlessException {
-		super(arg0);
-		createGUI();
-		trainConfiguration = new DepartingTrain();
-		carriagePanelStack = new Stack<Canvas>();
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					TrainGUI frame = new TrainGUI();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
-	private void createGUI() {
-		setSize(WIDTH, HEIGHT);
+	/**
+	 * Create and popualte the frame.
+	 */
+	public TrainGUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		BorderLayout borderLayout = new BorderLayout();
-		getContentPane().setLayout(borderLayout);
-
+		setBounds(100, 100, 620, 780);
+		mainPane = new JPanel();
+		mainPane.setMaximumSize(new Dimension(800, 800));
+		mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		mainPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(mainPane);
+		
 		JPanel setupViewContainer = new JPanel();
 		setupViewContainer.setBorder(null);
 		getContentPane().add(setupViewContainer, BorderLayout.NORTH);
@@ -86,372 +142,819 @@ public class TrainGUI extends JFrame implements ActionListener {
 
 		JScrollPane carriageScrollPane = new JScrollPane();
 		carriageScrollPane.setBorder(null);
-		carriageScrollPane.setPreferredSize(new Dimension(750, 135));
-		carriageScrollPane
-				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		carriageScrollPane.setPreferredSize(new Dimension(580, 135));
+		carriageScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		setupViewContainer.add(carriageScrollPane);
 
 		carriagePanel = new JPanel();
+		carriagePanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		carriageScrollPane.setViewportView(carriagePanel);
 		carriagePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-
+		
 		JPanel contentPanel = new JPanel();
+		contentPanel.setPreferredSize(new Dimension(800, 800));
+		contentPanel.setMaximumSize(new Dimension(800, 800));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.X_AXIS));
-
-		JPanel leftDriverPanel = new JPanel();
-		contentPanel.add(leftDriverPanel);
-		leftDriverPanel.setLayout(new BorderLayout(0, 0));
-
-		JPanel leftDriverPanelFloatRight = new JPanel();
-		leftDriverPanel.add(leftDriverPanelFloatRight, BorderLayout.EAST);
-		leftDriverPanelFloatRight.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		leftDriverPanelFloatRight.setBorder(new EtchedBorder(
-				EtchedBorder.LOWERED, null, null));
-		leftDriverPanelFloatRight.setPreferredSize(new Dimension(375, 10));
-		leftDriverPanelFloatRight.setMinimumSize(new Dimension(350, 10));
-		leftDriverPanelFloatRight.setLayout(new BorderLayout(0, 0));
-
-		JPanel carriageInfoPanelDriver = new JPanel();
-		carriageInfoPanelDriver.setPreferredSize(new Dimension(10, 110));
-		carriageInfoPanelDriver.setBorder(new EtchedBorder(EtchedBorder.LOWERED,
-				null, null));
-		leftDriverPanelFloatRight.add(carriageInfoPanelDriver, BorderLayout.NORTH);
-		carriageInfoPanelDriver.setLayout(null);
+		SpringLayout sl_contentPanel = new SpringLayout();
+		contentPanel.setLayout(sl_contentPanel);
 		
-		JLabel lblTrainWeightTitle = new JLabel("Train weight (t):");
-		lblTrainWeightTitle.setBounds(12, 12, 100, 16);
-		carriageInfoPanelDriver.add(lblTrainWeightTitle);
+		trainDriverPanel = new JPanel();
+		sl_contentPanel.putConstraint(SpringLayout.NORTH, trainDriverPanel, 10, SpringLayout.NORTH, contentPanel);
+		sl_contentPanel.putConstraint(SpringLayout.WEST, trainDriverPanel, 10, SpringLayout.WEST, contentPanel);
+		sl_contentPanel.putConstraint(SpringLayout.SOUTH, trainDriverPanel, -10, SpringLayout.SOUTH, contentPanel);
+		trainDriverPanel.setMaximumSize(new Dimension(400, 270));
+		trainDriverPanel.setSize(new Dimension(400, 270));
+		trainDriverPanel.setVisible(true);
+		trainDriverPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		trainDriverPanel.setPreferredSize(new Dimension(400, 270));
+		trainDriverPanel.setMinimumSize(new Dimension(400, 270));
+		contentPanel.add(trainDriverPanel);
 		
-		lblTotalWeight = new JLabel();
-		lblTotalWeight.setBounds(119, 12, 60, 16);
-		carriageInfoPanelDriver.add(lblTotalWeight);
+		ErrorMessageBox = new JTextArea();
+		sl_contentPanel.putConstraint(SpringLayout.EAST, trainDriverPanel, -10, SpringLayout.WEST, ErrorMessageBox);
+		sl_contentPanel.putConstraint(SpringLayout.NORTH, ErrorMessageBox, 327, SpringLayout.NORTH, contentPanel);
+		sl_contentPanel.putConstraint(SpringLayout.SOUTH, ErrorMessageBox, -53, SpringLayout.SOUTH, contentPanel);
+		sl_contentPanel.putConstraint(SpringLayout.EAST, ErrorMessageBox, -10, SpringLayout.EAST, contentPanel);
+		ErrorMessageBox.setEditable(false);
+		ErrorMessageBox.setBackground(Color.WHITE);
+		ErrorMessageBox.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		ErrorMessageBox.setSize(new Dimension(600, 50));
+		ErrorMessageBox.setMaximumSize(new Dimension(600, 50));
+		ErrorMessageBox.setMinimumSize(new Dimension(600, 50));
+		ErrorMessageBox.setPreferredSize(new Dimension(600, 50));
+		ErrorMessageBox.setLineWrap(true);
+		ErrorMessageBox.setWrapStyleWord(true);
+		contentPanel.add(ErrorMessageBox);
 		
-		JLabel lblPullingPowerTitle = new JLabel("Pulling power (t):");
-		lblPullingPowerTitle.setBounds(191, 12, 100, 16);
-		carriageInfoPanelDriver.add(lblPullingPowerTitle);
+		JPanel conductorPanel = new JPanel();
+		sl_contentPanel.putConstraint(SpringLayout.NORTH, conductorPanel, 10, SpringLayout.NORTH, contentPanel);
+		sl_contentPanel.putConstraint(SpringLayout.WEST, ErrorMessageBox, 0, SpringLayout.WEST, conductorPanel);
+		sl_contentPanel.putConstraint(SpringLayout.WEST, conductorPanel, 329, SpringLayout.WEST, contentPanel);
+		sl_contentPanel.putConstraint(SpringLayout.EAST, conductorPanel, -10, SpringLayout.EAST, contentPanel);
+		conductorPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		SpringLayout sl_trainDriverPanel = new SpringLayout();
+		trainDriverPanel.setLayout(sl_trainDriverPanel);
 		
-		lblPullingPower = new JLabel();
-		lblPullingPower.setBounds(299, 12, 60, 16);
-		carriageInfoPanelDriver.add(lblPullingPower);
+		JLabel trainDriverTitle = new JLabel("Train Driver Controls");
+		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, trainDriverTitle, 8, SpringLayout.WEST, trainDriverPanel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.SOUTH, trainDriverTitle, -519, SpringLayout.SOUTH, trainDriverPanel);
+		trainDriverTitle.setFont(new Font("Tahoma", Font.BOLD, 12));
+		trainDriverPanel.add(trainDriverTitle);
 		
-		JLabel lblCanTheTrain = new JLabel("Can the train move?");
-		lblCanTheTrain.setFont(new Font("Dialog", Font.BOLD, 14));
-		lblCanTheTrain.setBounds(72, 71, 154, 31);
-		carriageInfoPanelDriver.add(lblCanTheTrain);
+		locomotivePanel = new JPanel();
+		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, locomotivePanel, 8, SpringLayout.WEST, trainDriverPanel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.SOUTH, locomotivePanel, -331, SpringLayout.SOUTH, trainDriverPanel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.EAST, locomotivePanel, -26, SpringLayout.EAST, trainDriverPanel);
+		locomotivePanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		trainDriverPanel.add(locomotivePanel);
+		SpringLayout sl_locomotivePanel = new SpringLayout();
+		locomotivePanel.setLayout(sl_locomotivePanel);
 		
-		lblTrainMoveStatus = new JLabel();
-		lblTrainMoveStatus.setFont(new Font("Dialog", Font.BOLD, 16));
-		lblTrainMoveStatus.setBounds(231, 71, 60, 31);
-		carriageInfoPanelDriver.add(lblTrainMoveStatus);
-
-		carriageEditPanelDriver = new JPanel();
-		leftDriverPanelFloatRight.add(carriageEditPanelDriver, BorderLayout.CENTER);
-		carriageEditPanelDriver.setLayout(null);
-
-		// Select a carriage Type combo box
-		cmbBoxCarriageType = new JComboBox<String>();
-		cmbBoxCarriageType.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent arg0) {
-				if (cmbBoxCarriageType.getSelectedIndex() == 0) {
-					hideNewCarriageInput();
-					lblWeight.setVisible(false);
-					txtBoxWeightInput.setVisible(false);
-				} else if (cmbBoxCarriageType.getSelectedIndex() == 1) {
-					hideNewCarriageInput();
-					lblPowerClass.setVisible(true);
-					txtBoxPowerInput.setVisible(true);
-					lblWeight.setVisible(true);
-					txtBoxWeightInput.setVisible(true);
-				} else if (cmbBoxCarriageType.getSelectedIndex() == 2) {
-					hideNewCarriageInput();
-					lblSeatCount.setVisible(true);
-					txtBoxSeatInput.setVisible(true);
-					lblWeight.setVisible(true);
-					txtBoxWeightInput.setVisible(true);
-				} else if (cmbBoxCarriageType.getSelectedIndex() == 3) {
-					hideNewCarriageInput();
-					lblGoodsType.setVisible(true);
-					txtBoxGoodsInput.setVisible(true);
-					lblWeight.setVisible(true);
-					txtBoxWeightInput.setVisible(true);
+		JLabel lblPowerType = new JLabel("Power:");
+		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, lblPowerType, 10, SpringLayout.NORTH, locomotivePanel);
+		sl_locomotivePanel.putConstraint(SpringLayout.WEST, lblPowerType, 10, SpringLayout.WEST, locomotivePanel);
+		locomotivePanel.add(lblPowerType);
+		
+		powerRating = new JComboBox();
+		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, powerRating, -3, SpringLayout.NORTH, lblPowerType);
+		sl_locomotivePanel.putConstraint(SpringLayout.WEST, powerRating, 6, SpringLayout.EAST, lblPowerType);
+		powerRating.setModel(new DefaultComboBoxModel(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9"}));
+		locomotivePanel.add(powerRating);
+		
+		JLabel lblEngineType = new JLabel("Engine Type:");
+		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, lblEngineType, 0, SpringLayout.NORTH, lblPowerType);
+		sl_locomotivePanel.putConstraint(SpringLayout.WEST, lblEngineType, 6, SpringLayout.EAST, powerRating);
+		locomotivePanel.add(lblEngineType);
+		
+		engineType = new JComboBox();
+		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, engineType, -3, SpringLayout.NORTH, lblPowerType);
+		sl_locomotivePanel.putConstraint(SpringLayout.WEST, engineType, 6, SpringLayout.EAST, lblEngineType);
+		engineType.addActionListener(this);
+		engineType.setModel(new DefaultComboBoxModel(new String[] {"Diesel", "Electric", "Steam"}));
+		locomotivePanel.add(engineType);
+		
+		JLabel lblWeight = new JLabel("Weight:");
+		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, lblWeight, 11, SpringLayout.SOUTH, lblPowerType);
+		sl_locomotivePanel.putConstraint(SpringLayout.WEST, lblWeight, 0, SpringLayout.WEST, lblPowerType);
+		locomotivePanel.add(lblWeight);
+		
+		locoWeightField = new JTextField();
+		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, locoWeightField, 6, SpringLayout.SOUTH, powerRating);
+		sl_locomotivePanel.putConstraint(SpringLayout.WEST, locoWeightField, 0, SpringLayout.WEST, powerRating);
+		locomotivePanel.add(locoWeightField);
+		locoWeightField.setColumns(10);
+		
+		addLocomotiveBtn = new JButton("Add Locomotive");
+		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, addLocomotiveBtn, 5, SpringLayout.SOUTH, locoWeightField);
+		sl_locomotivePanel.putConstraint(SpringLayout.WEST, addLocomotiveBtn, 0, SpringLayout.WEST, lblPowerType);
+		locomotivePanel.add(addLocomotiveBtn);
+		addLocomotiveBtn.addActionListener(this);
+		conductorPanel.setPreferredSize(new Dimension(350, 270));
+		conductorPanel.setMinimumSize(new Dimension(350, 270));
+		contentPanel.add(conductorPanel);
+		SpringLayout sl_conductorPanel = new SpringLayout();
+		conductorPanel.setLayout(sl_conductorPanel);
+		
+		JLabel conductorTitle = new JLabel("Conductor Panel");
+		conductorTitle.setFont(new Font("Tahoma", Font.BOLD, 12));
+		sl_conductorPanel.putConstraint(SpringLayout.NORTH, conductorTitle, 10, SpringLayout.NORTH, conductorPanel);
+		sl_conductorPanel.putConstraint(SpringLayout.WEST, conductorTitle, 10, SpringLayout.WEST, conductorPanel);
+		conductorPanel.add(conductorTitle);
+		
+		boardLabel = new JLabel("Passengers to board:");
+		sl_conductorPanel.putConstraint(SpringLayout.WEST, boardLabel, 0, SpringLayout.WEST, conductorTitle);
+		conductorPanel.add(boardLabel);
+		
+		totalPassengerLabel = new JLabel("Total Passengers: ");
+		sl_conductorPanel.putConstraint(SpringLayout.NORTH, boardLabel, 24, SpringLayout.SOUTH, totalPassengerLabel);
+		sl_conductorPanel.putConstraint(SpringLayout.NORTH, totalPassengerLabel, 16, SpringLayout.SOUTH, conductorTitle);
+		sl_conductorPanel.putConstraint(SpringLayout.WEST, totalPassengerLabel, 0, SpringLayout.WEST, conductorTitle);
+		conductorPanel.add(totalPassengerLabel);
+		
+		
+		final DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<Integer>(boardComboBoxItems);
+		boardComboBox = new JComboBox<Integer>(model);
+		sl_conductorPanel.putConstraint(SpringLayout.WEST, boardComboBox, 16, SpringLayout.EAST, boardLabel);
+		sl_conductorPanel.putConstraint(SpringLayout.EAST, boardComboBox, -46, SpringLayout.EAST, conductorPanel);
+		sl_conductorPanel.putConstraint(SpringLayout.NORTH, boardComboBox, 75, SpringLayout.NORTH, conductorPanel);
+		conductorPanel.add(boardComboBox);
+		
+		boardBtn = new JButton("Click to Board");
+		boardBtn.setEnabled(false);
+		boardBtn.addActionListener(this);
+		sl_conductorPanel.putConstraint(SpringLayout.NORTH, boardBtn, 17, SpringLayout.SOUTH, boardLabel);
+		sl_conductorPanel.putConstraint(SpringLayout.WEST, boardBtn, 0, SpringLayout.WEST, conductorTitle);
+		conductorPanel.add(boardBtn);
+		
+		JPanel freightCarPanel = new JPanel();
+		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, freightCarPanel, 0, SpringLayout.WEST, trainDriverTitle);
+		sl_trainDriverPanel.putConstraint(SpringLayout.SOUTH, freightCarPanel, -53, SpringLayout.SOUTH, trainDriverPanel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.EAST, freightCarPanel, -18, SpringLayout.EAST, trainDriverPanel);
+		freightCarPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		freightCarPanel.setEnabled(false);
+		trainDriverPanel.add(freightCarPanel);
+		
+		freightCarSetupLabel = new JLabel("Freight Car Setup");
+		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, freightCarPanel, 6, SpringLayout.SOUTH, freightCarSetupLabel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, freightCarSetupLabel, 0, SpringLayout.WEST, trainDriverTitle);
+		freightCarSetupLabel.setFont(new Font("Tahoma", Font.ITALIC, 11));
+		freightCarSetupLabel.setEnabled(false);
+		SpringLayout sl_freightCarPanel = new SpringLayout();
+		freightCarPanel.setLayout(sl_freightCarPanel);
+		
+		JLabel lblGoodsType = new JLabel("Goods Type");
+		sl_freightCarPanel.putConstraint(SpringLayout.NORTH, lblGoodsType, 8, SpringLayout.NORTH, freightCarPanel);
+		sl_freightCarPanel.putConstraint(SpringLayout.WEST, lblGoodsType, 10, SpringLayout.WEST, freightCarPanel);
+		freightCarPanel.add(lblGoodsType);
+		
+		goodsType = new JComboBox();
+		sl_freightCarPanel.putConstraint(SpringLayout.NORTH, goodsType, -3, SpringLayout.NORTH, lblGoodsType);
+		sl_freightCarPanel.putConstraint(SpringLayout.WEST, goodsType, 6, SpringLayout.EAST, lblGoodsType);
+		goodsType.setModel(new DefaultComboBoxModel(new String[] {"General", "Refrigerated", "Dangerous"}));
+		goodsType.addActionListener(this);
+		goodsType.setEnabled(false);
+		freightCarPanel.add(goodsType);
+		
+		JLabel lblWeight_1 = new JLabel("Weight:");
+		sl_freightCarPanel.putConstraint(SpringLayout.NORTH, lblWeight_1, 14, SpringLayout.SOUTH, lblGoodsType);
+		sl_freightCarPanel.putConstraint(SpringLayout.WEST, lblWeight_1, 0, SpringLayout.WEST, lblGoodsType);
+		freightCarPanel.add(lblWeight_1);
+		
+		freightWeight = new JTextField();
+		sl_freightCarPanel.putConstraint(SpringLayout.NORTH, freightWeight, -3, SpringLayout.NORTH, lblWeight_1);
+		sl_freightCarPanel.putConstraint(SpringLayout.WEST, freightWeight, 0, SpringLayout.WEST, goodsType);
+		freightWeight.setEnabled(false);
+		freightCarPanel.add(freightWeight);
+		freightWeight.setColumns(10);
+		
+		addFreightCarBtn = new JButton("Add Freight Car");
+		sl_freightCarPanel.putConstraint(SpringLayout.NORTH, addFreightCarBtn, 8, SpringLayout.SOUTH, lblWeight_1);
+		sl_freightCarPanel.putConstraint(SpringLayout.WEST, addFreightCarBtn, 0, SpringLayout.WEST, lblGoodsType);
+		addFreightCarBtn.addActionListener(this);
+		addFreightCarBtn.setEnabled(false);
+		freightCarPanel.add(addFreightCarBtn);
+		trainDriverPanel.add(freightCarSetupLabel);
+		
+		passengerCarSetupLabel = new JLabel("Passenger Car Setup");
+		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, passengerCarSetupLabel, 6, SpringLayout.SOUTH, locomotivePanel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, passengerCarSetupLabel, 0, SpringLayout.WEST, trainDriverTitle);
+		passengerCarSetupLabel.setFont(new Font("Tahoma", Font.ITALIC, 11));
+		passengerCarSetupLabel.setEnabled(false);
+		trainDriverPanel.add(passengerCarSetupLabel);
+		
+		JPanel passengerCarPanel = new JPanel();
+		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, freightCarSetupLabel, 10, SpringLayout.SOUTH, passengerCarPanel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.SOUTH, passengerCarPanel, -194, SpringLayout.SOUTH, trainDriverPanel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, passengerCarPanel, 6, SpringLayout.SOUTH, passengerCarSetupLabel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, passengerCarPanel, 0, SpringLayout.WEST, trainDriverTitle);
+		sl_trainDriverPanel.putConstraint(SpringLayout.EAST, passengerCarPanel, -18, SpringLayout.EAST, trainDriverPanel);
+		passengerCarPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		trainDriverPanel.add(passengerCarPanel);
+		SpringLayout sl_passengerCarPanel = new SpringLayout();
+		passengerCarPanel.setLayout(sl_passengerCarPanel);
+		
+		JLabel passengerLimitLabel = new JLabel("Passenger Limit:");
+		sl_passengerCarPanel.putConstraint(SpringLayout.NORTH, passengerLimitLabel, 10, SpringLayout.NORTH, passengerCarPanel);
+		sl_passengerCarPanel.putConstraint(SpringLayout.WEST, passengerLimitLabel, 10, SpringLayout.WEST, passengerCarPanel);
+		passengerCarPanel.add(passengerLimitLabel);
+		
+		JLabel passengerWeightLabel = new JLabel("Weight:");
+		sl_passengerCarPanel.putConstraint(SpringLayout.NORTH, passengerWeightLabel, 16, SpringLayout.SOUTH, passengerLimitLabel);
+		sl_passengerCarPanel.putConstraint(SpringLayout.WEST, passengerWeightLabel, 10, SpringLayout.WEST, passengerCarPanel);
+		passengerCarPanel.add(passengerWeightLabel);
+		
+		addPassengerCarBtn = new JButton("Add Passenger Car");
+		sl_passengerCarPanel.putConstraint(SpringLayout.WEST, addPassengerCarBtn, 0, SpringLayout.WEST, passengerLimitLabel);
+		addPassengerCarBtn.addActionListener(this);
+		addPassengerCarBtn.setEnabled(false);
+		passengerCarPanel.add(addPassengerCarBtn);
+		
+		passengerLimitField = new JTextField();
+		passengerLimitField.setEnabled(false);
+		sl_passengerCarPanel.putConstraint(SpringLayout.WEST, passengerLimitField, 6, SpringLayout.EAST, passengerLimitLabel);
+		sl_passengerCarPanel.putConstraint(SpringLayout.SOUTH, passengerLimitField, 0, SpringLayout.SOUTH, passengerLimitLabel);
+		passengerCarPanel.add(passengerLimitField);
+		passengerLimitField.setColumns(10);
+		
+		passengerWeight = new JTextField();
+		sl_passengerCarPanel.putConstraint(SpringLayout.NORTH, addPassengerCarBtn, 7, SpringLayout.SOUTH, passengerWeight);
+		sl_passengerCarPanel.putConstraint(SpringLayout.NORTH, passengerWeight, -3, SpringLayout.NORTH, passengerWeightLabel);
+		sl_passengerCarPanel.putConstraint(SpringLayout.EAST, passengerWeight, 0, SpringLayout.EAST, passengerLimitField);
+		passengerWeight.setEnabled(false);
+		passengerCarPanel.add(passengerWeight);
+		passengerWeight.setColumns(10);
+		
+		removeCarraigeBtn = new JButton("Remove Carraige");
+		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, removeCarraigeBtn, 6, SpringLayout.SOUTH, freightCarPanel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, removeCarraigeBtn, 10, SpringLayout.WEST, freightCarPanel);
+		removeCarraigeBtn.setEnabled(false);
+		removeCarraigeBtn.addActionListener(this);
+		trainDriverPanel.add(removeCarraigeBtn);
+		
+		startTrainBtn = new JButton("Reset Configuration");
+		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, startTrainBtn, 6, SpringLayout.SOUTH, freightCarPanel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.EAST, startTrainBtn, 0, SpringLayout.EAST, freightCarPanel);
+		sl_contentPanel.putConstraint(SpringLayout.NORTH, startTrainBtn, -4, SpringLayout.NORTH, freightCarSetupLabel);
+		sl_contentPanel.putConstraint(SpringLayout.EAST, startTrainBtn, -316, SpringLayout.EAST, trainDriverPanel);
+		trainDriverPanel.add(startTrainBtn);
+		
+		totalWeightLabel = new JLabel("Train Total Weight:");
+		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, totalWeightLabel, 6, SpringLayout.SOUTH, trainDriverTitle);
+		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, totalWeightLabel, 0, SpringLayout.WEST, trainDriverTitle);
+		trainDriverPanel.add(totalWeightLabel);
+		
+		trainPullingLimitLabel = new JLabel("Train Pulling Capacity:");
+		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, trainPullingLimitLabel, 50, SpringLayout.NORTH, trainDriverPanel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, trainPullingLimitLabel, 0, SpringLayout.WEST, trainDriverTitle);
+		trainDriverPanel.add(trainPullingLimitLabel);
+		
+		trainCanMoveLabel = new JLabel("Train Can Move:");
+		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, locomotivePanel, 30, SpringLayout.SOUTH, trainCanMoveLabel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, trainCanMoveLabel, 6, SpringLayout.SOUTH, trainPullingLimitLabel);
+		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, trainCanMoveLabel, 0, SpringLayout.WEST, trainDriverTitle);
+		trainDriverPanel.add(trainCanMoveLabel);
+		
+		errorMessageBoxLabel = new JLabel("Error Console");
+		sl_contentPanel.putConstraint(SpringLayout.SOUTH, conductorPanel, -81, SpringLayout.NORTH, errorMessageBoxLabel);
+		sl_contentPanel.putConstraint(SpringLayout.WEST, errorMessageBoxLabel, 0, SpringLayout.WEST, ErrorMessageBox);
+		sl_contentPanel.putConstraint(SpringLayout.SOUTH, errorMessageBoxLabel, -6, SpringLayout.NORTH, ErrorMessageBox);
+		
+		locomotiveSetupLabel = new JLabel("Locomotive Setup");
+		locomotiveSetupLabel.setFont(new Font("Tahoma", Font.ITALIC, 11));
+		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, locomotiveSetupLabel, 0, SpringLayout.WEST, trainDriverTitle);
+		sl_trainDriverPanel.putConstraint(SpringLayout.SOUTH, locomotiveSetupLabel, -6, SpringLayout.NORTH, locomotivePanel);
+		trainDriverPanel.add(locomotiveSetupLabel);
+		errorMessageBoxLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+		contentPanel.add(errorMessageBoxLabel);
+		startTrainBtn.addActionListener(this);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+		ErrorMessageBox.setText("");
+		
+		
+		
+		String buttonString = e.getActionCommand();
+		
+		switch(buttonString){
+		
+		//Resets Train Configuration
+		case "Reset Configuration":
+			
+			//Resets the panels to default
+			departingTrain = new DepartingTrain();
+			
+			resetToDefaultLayoutAndValues();
+			
+			// Remove Carriage from physical window and logical line-up.
+			carriagePanel.removeAll();
+			carriagePanelStack.clear();
+			
+			
+			validate();
+			repaint();
+			
+			break;
+		
+		//Add Locomotive Button Action
+		case "Add Locomotive":
+			
+			//checks that input for the locomotive weight
+			if(locoWeightField.getText().equalsIgnoreCase("")){
+				ErrorMessageBox.append("Please input a value into locomotive weight");
+			}else if(Integer.parseInt(locoWeightField.getText()) <= 0){
+				ErrorMessageBox.append("Please input a weight higher than 0.");
+			}else{
+				StringBuilder locomotivePowerToString = new StringBuilder();
+				int newLocoWeight = 0;
+				
+				//assigns the string value for power rating
+				int locomotivePowerRate = Integer.parseInt((String) powerRating.getSelectedItem());
+				locomotivePowerToString.append("");
+				locomotivePowerToString.append(locomotivePowerRate);
+				String engineTypeToSingleChar = "";
+				
+				//assigns the string value for the engine type
+				if(engineType.getSelectedIndex() == 0){
+					engineTypeToSingleChar = "D";
+				}else if(engineType.getSelectedIndex() == 1){
+					engineTypeToSingleChar = "S";
+				}else if(engineType.getSelectedIndex() == 2){
+					engineTypeToSingleChar = "E";
 				}
-			}
-		});
-		cmbBoxCarriageType.setModel(new DefaultComboBoxModel<String>(
-				new String[] { "Enter a carriage type.", "Locomotive",
-						"PassengerCar", "FreightCar" }));
-		cmbBoxCarriageType.setBounds(12, 42, 163, 25);
-		carriageEditPanelDriver.add(cmbBoxCarriageType);
-
-		// PowerClass label
-		lblPowerClass = new JLabel("Power class:");
-		lblPowerClass.setVisible(false);
-		lblPowerClass.setBounds(12, 79, 92, 16);
-		carriageEditPanelDriver.add(lblPowerClass);
-
-		// PowerClass input box
-		txtBoxPowerInput = new JTextField();
-		txtBoxPowerInput.setVisible(false);
-		txtBoxPowerInput.setBounds(12, 101, 163, 20);
-		carriageEditPanelDriver.add(txtBoxPowerInput);
-
-		// Seat count label
-		lblSeatCount = new JLabel("Seat count:");
-		lblSeatCount.setVisible(false);
-		lblSeatCount.setBounds(12, 79, 107, 16);
-		carriageEditPanelDriver.add(lblSeatCount);
-
-		// Seat count input box
-		txtBoxSeatInput = new JSpinner();
-		txtBoxSeatInput.setVisible(false);
-		txtBoxSeatInput.setBounds(12, 101, 163, 20);
-		carriageEditPanelDriver.add(txtBoxSeatInput);
-
-		// Goods type label
-		lblGoodsType = new JLabel("Goods Type:");
-		lblGoodsType.setVisible(false);
-		lblGoodsType.setBounds(12, 79, 124, 16);
-		carriageEditPanelDriver.add(lblGoodsType);
-
-		// Goods type input box
-		txtBoxGoodsInput = new JTextField();
-		txtBoxGoodsInput.setVisible(false);
-		txtBoxGoodsInput.setBounds(12, 101, 163, 20);
-		carriageEditPanelDriver.add(txtBoxGoodsInput);
-
-		// Weight label
-		lblWeight = new JLabel("Weight (kg):");
-		lblWeight.setVisible(false);
-		lblWeight.setBounds(187, 79, 124, 16);
-		carriageEditPanelDriver.add(lblWeight);
-
-		// Weight input box
-		txtBoxWeightInput = new JSpinner();
-		txtBoxWeightInput.setVisible(false);
-		txtBoxWeightInput.setBounds(187, 101, 163, 20);
-		carriageEditPanelDriver.add(txtBoxWeightInput);
-
-		// Add Carriage to Train label
-		JLabel lblAddCarriageTitle = new JLabel("Add a Carriage to Train:");
-		lblAddCarriageTitle.setFont(new Font("Dialog", Font.BOLD, 14));
-		lblAddCarriageTitle.setBounds(12, 12, 217, 25);
-		carriageEditPanelDriver.add(lblAddCarriageTitle);
-
-		// Add Carriage button
-		JButton btnAddCarriage = new JButton("Add Carriage");
-		btnAddCarriage.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				Canvas newCarriageCanvas = new Canvas();
-
+				
+				//combines the power rating and engine type into a
+				//valid classification string
+				String locomotiveClassification = locomotivePowerToString.toString() + engineTypeToSingleChar;
+				
+				
+				
+				try{Integer.parseInt(locoWeightField.getText());
+				
+				}catch(NumberFormatException x){
+					ErrorMessageBox.append("Invalid Weight");
+				}
+				
+				
+				newLocoWeight = Integer.parseInt(locoWeightField.getText());
+				totalGrossWeight += newLocoWeight;	
+				
+				//Attempt to create a new locomotive based off the
+				//user input values
 				try {
-					if (cmbBoxCarriageType.getSelectedItem() == "Enter a carriage type.") {
-						return;
-					} else if (cmbBoxCarriageType.getSelectedItem() == "Locomotive") {
-						trainConfiguration.addCarriage(new Locomotive(
-								(Integer) txtBoxWeightInput.getValue(),
-								txtBoxPowerInput.getText()));
-						newCarriageCanvas.figure = LOCOMOTIVE_PAINT;
-					} else if (cmbBoxCarriageType.getSelectedItem() == "PassengerCar") {
-						trainConfiguration.addCarriage(new PassengerCar(
-								(Integer) txtBoxWeightInput.getValue(),
-								(Integer) txtBoxSeatInput.getValue()));
-						newCarriageCanvas.figure = PASSENGERCAR_PAINT;
-					} else if (cmbBoxCarriageType.getSelectedItem() == "FreightCar") {
-						trainConfiguration.addCarriage(new FreightCar(
-								(Integer) txtBoxWeightInput.getValue(),
-								txtBoxGoodsInput.getText()));
-						newCarriageCanvas.figure = FREIGHTCAR_PAINT;
-					}
-				} catch (TrainException e) {
-					e.printStackTrace();
-					return;
+					departingTrain.addCarriage(new Locomotive(newLocoWeight, locomotiveClassification));
+					
+					//enables the valid actions that the user
+					//have after adding a locomotive
+					locomotiveSetupLabel.setEnabled(false);
+					addLocomotiveBtn.setEnabled(false);
+					addFreightCarBtn.setEnabled(true);
+					addPassengerCarBtn.setEnabled(true);
+					removeCarraigeBtn.setEnabled(true);
+					freightWeight.setEnabled(true);
+					goodsType.setEnabled(true);
+					passengerLimitField.setEnabled(true);
+					passengerWeight.setEnabled(true);
+					passengerCarSetupLabel.setEnabled(true);
+					freightCarSetupLabel.setEnabled(true);
+					
+				} catch (TrainException e1) {
+					ErrorMessageBox.append(e1.getMessage());
+					locomotiveSetupLabel.setEnabled(false);
+					removeCarraigeBtn.setEnabled(false);
 				}
-
+				
+				
+				
 				// Find the train recently created so we can work with it
 				// multiple times.
 				if (carriagePanelStack.size() == 0)
-					currentCarriage = trainConfiguration.firstCarriage();
+					currentCarriage = departingTrain.firstCarriage();
 				else
-					currentCarriage = trainConfiguration.nextCarriage();
-
-				// Stop the possible null carriage creating further exceptions.
-				if (currentCarriage == null)
-					return;
+					currentCarriage = departingTrain.nextCarriage();
 				
-				totalWeight += currentCarriage.getGrossWeight();
-				lblTotalWeight.setText("" + totalWeight);
-
+				Canvas newCarriageCanvasLoco = new Canvas();
+				
 				// Display their text readable description.
-				newCarriageCanvas.getCarriageLabel().setText(
+				newCarriageCanvasLoco.getCarriageLabel().setText(
 						currentCarriage.toString());
 
 				// Check their capacity and display progressBar accordingly.
-				if (currentCarriage instanceof Locomotive) {
-					newCarriageCanvas.getProgressBar().setMaximum(
-							((Locomotive) currentCarriage).power());
-					newCarriageCanvas.getProgressBar().setValue(
-							currentCarriage.getGrossWeight());
-					lblPullingPower.setText("" + ((Locomotive) currentCarriage).power());
-				} else if (currentCarriage instanceof PassengerCar) {
-					newCarriageCanvas.getProgressBar().setMaximum(
-							((PassengerCar) currentCarriage).numberOfSeats());
-				} else if (currentCarriage instanceof FreightCar) {
-					newCarriageCanvas.getProgressBar().setMaximum(
-							currentCarriage.getGrossWeight());
-					newCarriageCanvas.getProgressBar().setValue(
-							currentCarriage.getGrossWeight());
+				trainMaxPull = ((Locomotive) currentCarriage).power();
+				newCarriageCanvasLoco.getProgressBar().setMaximum(
+						((Locomotive) currentCarriage).power());
+				newCarriageCanvasLoco.getProgressBar().setValue(
+						totalGrossWeight);
+				
+				
+				
+				// Add to logical list.
+				carriagePanelStack.push(newCarriageCanvasLoco);
+
+				newCarriageCanvasLoco.figure = LOCOMOTIVE_PAINT;
+				
+				carriagePanel.add(newCarriageCanvasLoco);
+				newCarriageCanvasLoco.setLayout(new FlowLayout(FlowLayout.LEFT, 0,
+						0));
+				trainDriverControls(departingTrain.trainCanMove(), e);
+				validate();
+				repaint();
+				
+			}
+			
+			break;
+			
+		//Add Freight Car Button Action	
+		case "Add Freight Car":
+			String goodsTypeString = "";
+			int newFreightWeight = 0;
+			
+			//sets the goods type as to what is valid for a Freight Car parameter
+			if(goodsType.getSelectedIndex() == 0){
+				goodsTypeString = "G";
+			}else if(goodsType.getSelectedIndex() == 1){
+				goodsTypeString = "R";
+			}else if(goodsType.getSelectedIndex() == 2){
+				goodsTypeString = "D";
+			}
+			
+			//checks if the textfield is blank
+			if(freightWeight.getText().equalsIgnoreCase("")){
+				ErrorMessageBox.append("Please input a value into freight weight");
+			}
+			//Ensure no negative values
+			else if(Integer.parseInt(freightWeight.getText()) <= 0){
+				ErrorMessageBox.append("Please input a weight higher than 0.");
+			}
+			//Executes the valid action of adding a freight car
+			else{
+			
+				//try to convert the textfield value into a valid integer
+				try{Integer.parseInt(freightWeight.getText());
+			
+				}catch(NumberFormatException x){
+					ErrorMessageBox.append("Invalid Weight");
 				}
+			
+				//save the value to local case variable
+				newFreightWeight = Integer.parseInt(freightWeight.getText());
+				
+				//adds the local case variable unto the total weight of the train
+				totalGrossWeight += newFreightWeight;
+				
+				//try to add a freight car base on the valid values
+				try {
+					departingTrain.addCarriage(new FreightCar(newFreightWeight, goodsTypeString));
+				} catch (TrainException e1) {
+					ErrorMessageBox.append(e1.getMessage());
+				
+				}
+			
+				
+				// Find the train recently created so we can work with it
+				// multiple times.
+				if (carriagePanelStack.size() == 0){
+					currentCarriage = departingTrain.firstCarriage();
+				}
+				else {
+					//go through the train till it reaches a car which is of FreightCar
+					do{
+					currentCarriage = departingTrain.nextCarriage();
+					}while(!(currentCarriage instanceof FreightCar));
+					
+				}
+				
+				
+				if(currentCarriage instanceof FreightCar){
+				Canvas newCarriageCanvasFreight = new Canvas();
+			
+				// Display their text readable description.
+				newCarriageCanvasFreight.getCarriageLabel().setText(
+					currentCarriage.toString());
+
+				// Check their capacity and display progressBar accordingly.
+				newCarriageCanvasFreight.getProgressBar().setMaximum(
+					currentCarriage.getGrossWeight());
+				newCarriageCanvasFreight.getProgressBar().setValue(
+					currentCarriage.getGrossWeight());
 
 				// Add to logical list.
-				carriagePanelStack.push(newCarriageCanvas);
+				carriagePanelStack.push(newCarriageCanvasFreight);
+			
+				newCarriageCanvasFreight.figure = FREIGHTCAR_PAINT;
 
-				carriagePanel.add(newCarriageCanvas);
-				newCarriageCanvas.setLayout(new FlowLayout(FlowLayout.LEFT, 0,
-						0));
-
-				//Update TrainCanMove status
-				if(trainConfiguration.trainCanMove()) {
-					lblTrainMoveStatus.setText("Yes");
-					lblTrainMoveStatus.setForeground(Color.GREEN);
-				} else {
-					lblTrainMoveStatus.setText("No");
-					lblTrainMoveStatus.setForeground(Color.RED);
+				carriagePanel.add(newCarriageCanvasFreight);
+				newCarriageCanvasFreight.setLayout(new FlowLayout(FlowLayout.LEFT, 0,
+					0));
+				
 				}
+				
+				//Disables adding of passengers after a freight car is added
+				passengerLimitField.setEnabled(false);
+				passengerWeight.setEnabled(false);
+				addPassengerCarBtn.setEnabled(false);
+				updateLocomotiveProgressBar();
+			
+				validate();
+				repaint();
+			
+				trainDriverControls(departingTrain.trainCanMove(),e);
+			}
+			break;
+			
+		
+		//Add Passenger Car Button Action
+		case "Add Passenger Car":
+			
+			int passengerCapacity = 0;
+			int newPassengerWeight = 0;
+			
+			if(passengerLimitField.getText().equalsIgnoreCase("") || passengerWeight.getText().equalsIgnoreCase("")){
+				ErrorMessageBox.append("Please fill in the both fields for the passenger car");
+			}else{
+				try{
+					Integer.parseInt(passengerLimitField.getText());
+				}catch(NumberFormatException x){
+					ErrorMessageBox.append("Invalid Number of Passengers");
+				}	
+				
+				try{
+					Integer.parseInt(passengerWeight.getText());
+				}catch(NumberFormatException x){
+					ErrorMessageBox.append("Invalid Weight");
+				}
+				
+				passengerCapacity = Integer.parseInt(passengerLimitField.getText());
+				
+				newPassengerWeight = Integer.parseInt(passengerWeight.getText());
+				totalGrossWeight += newPassengerWeight;
+				
+				//Set the number of passengers allowed to board
+				
+				
+				try {
+					departingTrain.addCarriage(new PassengerCar(newPassengerWeight, passengerCapacity));
+					updateBoardComboBox();
+					
+				} catch (TrainException e1) {
+					ErrorMessageBox.append(e1.getMessage());
+				}
+				
+				//Updates the combox Box (Display)
+				boardComboBox.setSelectedIndex(spaceAvaliable);
+				boardComboBox.setSelectedIndex(0);
+				boardBtn.setEnabled(true);
+
+				// Find the train recently created so we can work with it
+				// multiple times.
+				if (carriagePanelStack.size() == 0){
+					currentCarriage = departingTrain.firstCarriage();
+				}else{
+					currentCarriage = departingTrain.nextCarriage();
+				}
+				
+				Canvas newCarriageCanvasPassenger = new Canvas();
+				
+				// Display their text readable description.
+				if(carriagePanelStack.size() >= 1 && currentCarriage instanceof PassengerCar){
+				newCarriageCanvasPassenger.getCarriageLabel().setText(
+						currentCarriage.toString());
+				
+				// Check their capacity and display progressBar accordingly.
+				newCarriageCanvasPassenger.getProgressBar().setMaximum(
+							((PassengerCar) currentCarriage).numberOfSeats());
+				}
+				
+				// Add to logical list.
+				carriagePanelStack.push(newCarriageCanvasPassenger);
+
+				newCarriageCanvasPassenger.figure = PASSENGERCAR_PAINT;
+				
+				carriagePanel.add(newCarriageCanvasPassenger);
+				newCarriageCanvasPassenger.setLayout(new FlowLayout(FlowLayout.LEFT, 0,
+						0));
+				
+				updateLocomotiveProgressBar();
+				trainDriverControls(departingTrain.trainCanMove(),e);
 				
 				validate();
 				repaint();
+				
+				
+
 			}
-		});
-		btnAddCarriage.setBounds(12, 133, 163, 39);
-		carriageEditPanelDriver.add(btnAddCarriage);
-
-		// Remove Carriage Button
-		JButton btnRemoveCarriage = new JButton("Remove Carriage");
-		btnRemoveCarriage.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					// Remove from both logical list and physical GUI.
-					if (!carriagePanelStack.isEmpty()) {
-						// Remove Carriage from both physical window and logical
-						// configuration stack.
-						trainConfiguration.removeCarriage();
-						carriagePanel.remove(carriagePanelStack.peek());
-						carriagePanelStack.pop();
-						
-						totalWeight -= currentCarriage.getGrossWeight();
-
-						//Return to the carriage before.
-						trainConfiguration.firstCarriage();
-						for (int i = 0; i < carriagePanelStack.size(); i++)
-							trainConfiguration.nextCarriage();
-						
-						//Update TrainCanMove status
-						if(trainConfiguration.trainCanMove()) {
-							lblTrainMoveStatus.setText("Yes");
-							lblTrainMoveStatus.setForeground(Color.GREEN);
-						} else {
-							lblTrainMoveStatus.setText("No");
-							lblTrainMoveStatus.setForeground(Color.RED);
+			
+			
+			
+			break;
+		
+		//Remove Carraige Button Action
+		case "Remove Carraige":
+			
+			//sets the button to false if the remvoed objects a locomotive
+			if(departingTrain.firstCarriage() instanceof Locomotive && departingTrain.nextCarriage() == null){
+				resetToDefaultLayoutAndValues();
+			}else{
+				removeCarraigeBtn.setEnabled(true);
+			}
+			
+			//try to remove a carriage from departing train
+			try{
+				
+				
+				currentCarriage = departingTrain.firstCarriage();
+				
+				//set the current carriage to the last carriage in the train
+				//if there is more than one rollingstock object
+				if(carriagePanelStack.size() > 1){
+					do{
+						for(int i = 1; i < carriagePanelStack.size();i++){
+							currentCarriage = departingTrain.nextCarriage();
 						}
-						
-						lblTotalWeight.setText("" + totalWeight);
-					}
-					validate();
-					repaint();
-				} catch (TrainException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					
+					}while(departingTrain.nextCarriage() != null);
 				}
+				
+				//removes the weight of the carriage fromt the total weight
+				if(!(currentCarriage instanceof Locomotive) && carriagePanelStack.size() > 1){
+				totalGrossWeight = totalGrossWeight - currentCarriage.getGrossWeight();
+						
+				}else if(carriagePanelStack.size() == 1){
+					totalGrossWeight = departingTrain.firstCarriage().getGrossWeight();
+					
+				}else{
+					resetToDefaultLayoutAndValues();
+				}
+				
+				departingTrain.removeCarriage();			
+			}catch(TrainException e1){
+				ErrorMessageBox.append(e1.getMessage());
 			}
-		});
-		btnRemoveCarriage.setBounds(187, 133, 163, 39);
-		carriageEditPanelDriver.add(btnRemoveCarriage);
+			
+			
+			
+			// Remove Carriage from physical window and logical line-up.
+			carriagePanel.remove(carriagePanelStack.peek());
+			carriagePanelStack.pop();
+			
+			trainDriverControls(departingTrain.trainCanMove(),e);
+			updateLocomotiveProgressBar();
+			updateBoardComboBox();
+			validate();
+			repaint();
+			
+			break;
+			
+		//Boarding button action
+		case "Click to Board":
+			
+			int passengersBoarding =  (int) boardComboBox.getSelectedItem();
+			passengersBoarded += passengersBoarding;
+			spaceAvaliable = maxPassengerCapacity - passengersBoarded;
+			
+			//Resets the combo box to the size of number of passengers allowed to board
+			boardComboBox.removeAllItems();
+			updateBoardComboBox();
+			
+			//try to board the number of passengers to the train
+			try {
+				departingTrain.board(passengersBoarding);				
+			} catch (TrainException e1) {
+				ErrorMessageBox.append(e1.getMessage());
+			}
 
-		JPanel rightConductorPanel = new JPanel();
-		contentPanel.add(rightConductorPanel);
-		rightConductorPanel.setLayout(new BorderLayout(0, 0));
-
-		JPanel rightConductorPanelFloatLeft = new JPanel();
-		rightConductorPanel.add(rightConductorPanelFloatLeft, BorderLayout.WEST);
-		rightConductorPanelFloatLeft.setAlignmentX(Component.LEFT_ALIGNMENT);
-		rightConductorPanelFloatLeft.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		rightConductorPanelFloatLeft.setPreferredSize(new Dimension(375, 10));
-		rightConductorPanelFloatLeft.setLayout(new BorderLayout(0, 0));
-
-		JPanel carriageInfoPanelConductor = new JPanel();
-		carriageInfoPanelConductor.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		FlowLayout fl_carriageInfoPanelConductor = (FlowLayout) carriageInfoPanelConductor.getLayout();
-		fl_carriageInfoPanelConductor.setVgap(25);
-		fl_carriageInfoPanelConductor.setHgap(25);
-		rightConductorPanelFloatLeft.add(carriageInfoPanelConductor, BorderLayout.NORTH);
-
-		JPanel carriageEditPanelConductor = new JPanel();
-		carriageEditPanelConductor.setLayout(null);
-		rightConductorPanelFloatLeft.add(carriageEditPanelConductor, BorderLayout.CENTER);
-
-		JButton btnBoard = new JButton("Board");
-		btnBoard.setBounds(12, 188, 99, 39);
-		carriageEditPanelConductor.add(btnBoard);
-
-		JButton btnReset = new JButton("Reset");
-		btnReset.setBounds(196, 188, 163, 39);
-		carriageEditPanelConductor.add(btnReset);
-
-		JSpinner txtBoxBoardAmountInput = new JSpinner();
-		txtBoxBoardAmountInput.setFont(new Font("Dialog", Font.BOLD, 14));
-		txtBoxBoardAmountInput.setBounds(108, 188, 64, 39);
-		carriageEditPanelConductor.add(txtBoxBoardAmountInput);
-
-		JLabel lblBoardPassengers = new JLabel("Board Passengers:");
-		lblBoardPassengers.setFont(new Font("Dialog", Font.BOLD, 14));
-		lblBoardPassengers.setBounds(12, 161, 160, 19);
-		carriageEditPanelConductor.add(lblBoardPassengers);
-
-		// Exception Panel
-		JPanel exceptionPanel = new JPanel();
-		exceptionPanel.setPreferredSize(new Dimension(10, 100));
-		getContentPane().add(exceptionPanel, BorderLayout.SOUTH);
-		exceptionPanel.setLayout(new BorderLayout(5, 5));
-
-		// Exception Panel label
-		JLabel lblErrorConsole = new JLabel("Error console:");
-		exceptionPanel.add(lblErrorConsole, BorderLayout.NORTH);
-
-		// Exception Panel text box
-		JTextPane exceptionTextPane = new JTextPane();
-		exceptionTextPane.setEditable(false);
-		exceptionTextPane.setToolTipText("Error messages");
-		exceptionTextPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED,
-				null, null));
-		exceptionPanel.add(exceptionTextPane);
-	}
-
-	private void hideNewCarriageInput() {
-		lblGoodsType.setVisible(false);
-		txtBoxGoodsInput.setVisible(false);
-		lblSeatCount.setVisible(false);
-		txtBoxSeatInput.setVisible(false);
-		lblPowerClass.setVisible(false);
-		txtBoxPowerInput.setVisible(false);
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		String buttonString = e.getActionCommand();
+			addFreightCarBtn.setEnabled(false);
+			addPassengerCarBtn.setEnabled(false);
+			removeCarraigeBtn.setEnabled(false);
+			
+			//checks through the list of carriages and update the value of
+			//the passenger car/s' progress bar
+			departingTrain.firstCarriage();
+			for(int i = 1; i < carriagePanelStack.size(); i++) {
+				currentCarriage = departingTrain.nextCarriage();
+				if(currentCarriage instanceof PassengerCar){
+					carriagePanelStack.get(i).getCarriageLabel().setText(
+					currentCarriage.toString());
+					carriagePanelStack.get(i).getProgressBar().setValue(((PassengerCar) currentCarriage).numberOnBoard());
+					}
+			   }
+			
+			validate();
+			repaint();
+			break;
+		}
+		
+		totalWeightLabel.setText("Train Total Weight: " + totalGrossWeight);
+		trainPullingLimitLabel.setText("Train Pulling Capacity: " + trainMaxPull);
+		trainCanMoveLabel.setText("Train Can Move: " + departingTrain.trainCanMove());
+		totalPassengerLabel.setText("Total Passengers: " + passengersBoarded);
 
 	}
-
+	
 	/**
-	 * @param args
+	 * updates the Boarding of passenger combo box to always remain
+	 * within the avaliable number of seats the train have left
+	 * 
 	 */
-	public static void main(String[] args) {
-		TrainGUI gui = new TrainGUI("Departing Train");
-		gui.setVisible(true);
-
+	private void updateBoardComboBox(){
+		maxPassengerCapacity = (int) departingTrain.numberOfSeats();
+		boardComboBox.removeAllItems();
+		int defaultBoardItem = 0;
+		
+		boardComboBoxItems.add(new Integer(defaultBoardItem));
+		spaceAvaliable = maxPassengerCapacity - passengersBoarded;
+		for(int i = 0; i < spaceAvaliable; i++){
+			boardComboBoxItems.add(i+1);	
+			
+		}
+		boardComboBox.setSelectedIndex(0);
 	}
-
-	public JPanel getCarriagePanel() {
-		return carriagePanel;
+	
+	/**
+	 * Updates the progress bar for the locomotive canvas object
+	 * 
+	 */
+	private void updateLocomotiveProgressBar(){
+		currentCarriage = departingTrain.firstCarriage();
+		if(currentCarriage instanceof Locomotive){
+				carriagePanelStack.get(0).getProgressBar().setMaximum(((Locomotive) departingTrain.firstCarriage()).power());
+				carriagePanelStack.get(0).getProgressBar().setValue(totalGrossWeight);	
+		}
+		
 	}
+	
+	/**
+	 * Ensures that when train cannot move, all the panels
+	 * are disabled, unless a carriage is removed
+	 * 
+	 */
+	private void trainDriverControls(Boolean trainCanMove, ActionEvent e){
+		if(!trainCanMove){
+			boardBtn.setEnabled(false);
+			addPassengerCarBtn.setEnabled(false);
+			addFreightCarBtn.setEnabled(false);
+			ErrorMessageBox.append("The train is overladen and cannot move.");
+		}else{
+			if(e.getActionCommand() == "Add Freight Car"){
+			addPassengerCarBtn.setEnabled(false);
+			boardBtn.setEnabled(false);
+			}else if(departingTrain.firstCarriage() == null){
+				resetToDefaultLayoutAndValues();
+			}else{
+				passengerWeight.setEnabled(true);
+				passengerLimitField.setEnabled(true);
+				addPassengerCarBtn.setEnabled(true);
+				addFreightCarBtn.setEnabled(true);
+				boardBtn.setEnabled(true);
+			}
+		}
+	}
+	
+	/**
+	 * Resets the layout and instance variables to default
+	 */
+	private void resetToDefaultLayoutAndValues(){
+		trainDriverPanel.setVisible(true);
+		
+		locomotivePanel.setVisible(true);
+		locomotiveSetupLabel.setEnabled(true);
+		addLocomotiveBtn.setEnabled(true);
+		locoWeightField.setText("");
+		powerRating.setSelectedIndex(0);
+		engineType.setSelectedIndex(0);
+		
+		
+		passengerCarSetupLabel.setEnabled(false);
+		addPassengerCarBtn.setEnabled(false);
+		passengerLimitField.setEnabled(false);
+		passengerWeight.setEnabled(false);
+		passengerLimitField.setText("");
+		passengerWeight.setText("");
+		
+		freightCarSetupLabel.setEnabled(false);
+		addFreightCarBtn.setEnabled(false);
+		freightWeight.setEnabled(false);
+		goodsType.setSelectedIndex(0);
+		freightWeight.setText("");
+		
+		goodsType.setEnabled(false);			
+		removeCarraigeBtn.setEnabled(false);
+		
+		boardBtn.setEnabled(false);
+		
+		//Resets class variables to default
+		totalGrossWeight = 0;
+		trainPower = 0;
+		passengersBoarded = 0;
+		maxPassengerCapacity = 0;
+		spaceAvaliable = 0;
+		trainMaxPull = 0;
+	}
+	
 }

@@ -3,6 +3,9 @@ package asgn2Exceptions;
 import java.io.Serializable;
 
 /**
+ * <p>A simple class for exceptions thrown by
+ * railway shunting and boarding operations.
+ * </p>
  * 
  * @author Jackson Powell, Yeo Fei Wen
  * 
@@ -10,10 +13,10 @@ import java.io.Serializable;
 public class TrainException extends Exception implements Serializable {
 
 	/**
-	 * Generates an exception message to be used in java classes.
+	 * Constructs a new TrainException object.
 	 * 
-	 * @param message
-	 *            An informative message about the problem found.
+	 * @param message an informative message describing the
+	 * cause of the problem
 	 */
 	public TrainException(String message) {
 		super("Train Exception: " + message);

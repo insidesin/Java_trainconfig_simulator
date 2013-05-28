@@ -3,9 +3,11 @@ package asgn2RollingStock;
 import asgn2Exceptions.TrainException;
 
 /**
+ * A passenger car is designed to carry people and has a fixed seating capacity.
+ * We assume that the train is a long-distance one in which all passengers are
+ * assigned a seat (unlike your peak-hour, metropolitan commuting experience!).
  * 
  * @author Jackson Powell, Yeo Fei Wen
- * 
  */
 public class PassengerCar extends RollingStock {
 
@@ -23,13 +25,12 @@ public class PassengerCar extends RollingStock {
 	 * @param numberOfSeats
 	 *            The number of seats to be used in the carriage
 	 * @throws TrainException
-	 *             If the gross weight is not a positive Integer or if the number of seats is
-	 *             negative
+	 *             If the gross weight is not a positive Integer or if the
+	 *             number of seats is negative
 	 */
 	public PassengerCar(Integer grossWeight, Integer numberOfSeats)
 			throws TrainException {
 		super(grossWeight);
-
 
 		if (numberOfSeats < 0) {
 			throw new TrainException(
@@ -50,29 +51,21 @@ public class PassengerCar extends RollingStock {
 	 * @return The number of people who were unable to board the carriage
 	 *         because they couldn't get a seat.
 	 * @throws TrainException
-	 *            If the number of new passengers is negative.
+	 *             If the number of new passengers is negative.
 	 */
 	public Integer board(Integer newPassengers) throws TrainException {
 		if (newPassengers < 0)
 			throw new TrainException(
 					"Number of passengers cannot be a negative. Only 0 or more can board.");
-		
+
 		Integer unableToBoardPassengers = 0;
-		
-		
-		if((onBoardPassengers + newPassengers) <= numOfSeats) {
+
+		if ((onBoardPassengers + newPassengers) <= numOfSeats) {
 			this.onBoardPassengers += newPassengers;
-		} else{ //if(((onBoardPassengers + newPassengers) % numOfSeats) == 0){
+		} else {
 			unableToBoardPassengers = ((onBoardPassengers + newPassengers) - numOfSeats);
 			this.onBoardPassengers = numOfSeats;
-			System.out.println("THIS IS:" + unableToBoardPassengers);
-		}/*else{
-			unableToBoardPassengers = ((onBoardPassengers + newPassengers) % numOfSeats);
-			this.onBoardPassengers = numOfSeats;
-			System.out.println("THAT IS:" + unableToBoardPassengers);
-		}*/
-		
-		//System.out.println(unableToBoardPassengers);
+		}
 		return unableToBoardPassengers;
 	}
 
@@ -120,10 +113,13 @@ public class PassengerCar extends RollingStock {
 	}
 
 	@Override
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Returns a human-readable description of the passenger car.  This has the form
+	 * "<code>Passenger(</code><em>x</em><code>/</code><em>y</em><code>)</code>" where
+	 * <em>x</em> is the number of passengers currently on
+	 * board and <em>y</em> is the number of seats in the carriage.
 	 * 
-	 * @see asgn2RollingStock.RollingStock#toString()
+	 * @return a human-readable description of the passenger car
 	 */
 	public String toString() {
 		return "Passenger(" + onBoardPassengers + "/" + numOfSeats + ")";
