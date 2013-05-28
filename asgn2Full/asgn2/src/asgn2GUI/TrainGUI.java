@@ -95,14 +95,12 @@ public class TrainGUI extends JFrame implements ActionListener {
 
 	// Class variables
 	private int totalGrossWeight;
-	private int trainPower;
 	private int passengersBoarded;
 	private int maxPassengerCapacity;
 	private int spaceAvaliable;
 	private int trainMaxPull;
 
 	private RollingStock currentCarriage;
-	private RollingStock prevCarriage;
 
 	private Vector<Integer> boardComboBoxItems = new Vector<Integer>();
 	private Stack<Canvas> carriagePanelStack = new Stack<Canvas>();
@@ -861,7 +859,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 			currentCarriage = departingTrain.firstCarriage();
 
 			// set the current carriage to the last carriage in the train
-			// if there is more than one rollingstock object
+			// if there is more than one RollingStock object
 			if (carriagePanelStack.size() > 1) {
 				for (int i = 1; i < carriagePanelStack.size(); i++) {
 					currentCarriage = departingTrain.nextCarriage();
@@ -1022,7 +1020,6 @@ public class TrainGUI extends JFrame implements ActionListener {
 
 		// Resets class variables to default
 		totalGrossWeight = 0;
-		trainPower = 0;
 		passengersBoarded = 0;
 		maxPassengerCapacity = 0;
 		spaceAvaliable = 0;
