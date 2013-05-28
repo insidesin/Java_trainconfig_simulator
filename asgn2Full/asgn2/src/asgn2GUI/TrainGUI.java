@@ -41,11 +41,11 @@ import java.awt.Font;
  */
 public class TrainGUI extends JFrame implements ActionListener {
 
-	// Static Variables (Magic numbers)
+	// Constants
 	private final static int WIDTH = 610;
 	private final static int HEIGHT = 780;
 
-	// canvas figure variables
+	// Constant canvas figure values
 	private static final int LOCOMOTIVE_PAINT = 0;
 	private static final int PASSENGERCAR_PAINT = 1;
 	private static final int FREIGHTCAR_PAINT = 2;
@@ -125,6 +125,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 	 * Create and popualte the frame.
 	 */
 	public TrainGUI() {
+		// creates the main Pane
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 620, 780);
 		mainPane = new JPanel();
@@ -133,11 +134,13 @@ public class TrainGUI extends JFrame implements ActionListener {
 		mainPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(mainPane);
 
+		// Creates the panel to store the train canvas Panel
 		JPanel setupViewContainer = new JPanel();
 		setupViewContainer.setBorder(null);
 		getContentPane().add(setupViewContainer, BorderLayout.NORTH);
 		setupViewContainer.setLayout(new FlowLayout(FlowLayout.CENTER, 25, 15));
 
+		// Creates a scrollpane to the train canvas panel
 		JScrollPane carriageScrollPane = new JScrollPane();
 		carriageScrollPane.setBorder(null);
 		carriageScrollPane.setPreferredSize(new Dimension(580, 135));
@@ -145,12 +148,15 @@ public class TrainGUI extends JFrame implements ActionListener {
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		setupViewContainer.add(carriageScrollPane);
 
+		// Creates the train canvas panel
 		carriagePanel = new JPanel();
 		carriagePanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null,
 				null));
 		carriageScrollPane.setViewportView(carriagePanel);
 		carriagePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
+		// Creates the content panel residing as the remaining part of the GUI
+		// body
 		JPanel contentPanel = new JPanel();
 		contentPanel.setPreferredSize(new Dimension(800, 800));
 		contentPanel.setMaximumSize(new Dimension(800, 800));
@@ -158,6 +164,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		SpringLayout sl_contentPanel = new SpringLayout();
 		contentPanel.setLayout(sl_contentPanel);
 
+		// Creates a panel to contain all train driver functions
 		trainDriverPanel = new JPanel();
 		sl_contentPanel.putConstraint(SpringLayout.NORTH, trainDriverPanel, 10,
 				SpringLayout.NORTH, contentPanel);
@@ -174,6 +181,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		trainDriverPanel.setMinimumSize(new Dimension(400, 270));
 		contentPanel.add(trainDriverPanel);
 
+		// creates an error message box to print errors/exceptions
 		ErrorMessageBox = new JTextArea();
 		sl_contentPanel.putConstraint(SpringLayout.EAST, trainDriverPanel, -10,
 				SpringLayout.WEST, ErrorMessageBox);
@@ -195,6 +203,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		ErrorMessageBox.setWrapStyleWord(true);
 		contentPanel.add(ErrorMessageBox);
 
+		// creates a panel to store all of the conductor's function
 		JPanel conductorPanel = new JPanel();
 		sl_contentPanel.putConstraint(SpringLayout.NORTH, conductorPanel, 10,
 				SpringLayout.NORTH, contentPanel);
@@ -209,6 +218,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		SpringLayout sl_trainDriverPanel = new SpringLayout();
 		trainDriverPanel.setLayout(sl_trainDriverPanel);
 
+		// creates a title for the train driver panel
 		JLabel trainDriverTitle = new JLabel("Train Driver Controls");
 		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, trainDriverTitle,
 				8, SpringLayout.WEST, trainDriverPanel);
@@ -217,6 +227,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		trainDriverTitle.setFont(new Font("Tahoma", Font.BOLD, 12));
 		trainDriverPanel.add(trainDriverTitle);
 
+		// creates a container to store locomotive parameter controls
 		locomotivePanel = new JPanel();
 		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, locomotivePanel,
 				8, SpringLayout.WEST, trainDriverPanel);
@@ -230,6 +241,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		SpringLayout sl_locomotivePanel = new SpringLayout();
 		locomotivePanel.setLayout(sl_locomotivePanel);
 
+		// creats a title for the power type in locomotive panel
 		JLabel lblPowerType = new JLabel("Power:");
 		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, lblPowerType, 10,
 				SpringLayout.NORTH, locomotivePanel);
@@ -237,6 +249,9 @@ public class TrainGUI extends JFrame implements ActionListener {
 				SpringLayout.WEST, locomotivePanel);
 		locomotivePanel.add(lblPowerType);
 
+		// creates a combox box listing the avaliable power ratings of a
+		// locomotive
+		// in locomotive panel
 		powerRating = new JComboBox();
 		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, powerRating, -3,
 				SpringLayout.NORTH, lblPowerType);
@@ -246,6 +261,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 				"3", "4", "5", "6", "7", "8", "9" }));
 		locomotivePanel.add(powerRating);
 
+		// creats a title for the engine type in locomotive panel
 		JLabel lblEngineType = new JLabel("Engine Type:");
 		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, lblEngineType, 0,
 				SpringLayout.NORTH, lblPowerType);
@@ -253,6 +269,9 @@ public class TrainGUI extends JFrame implements ActionListener {
 				SpringLayout.EAST, powerRating);
 		locomotivePanel.add(lblEngineType);
 
+		// creates a combo box listing the avaliable engine types of a
+		// locomotive
+		// in locomotive panel
 		engineType = new JComboBox();
 		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, engineType, -3,
 				SpringLayout.NORTH, lblPowerType);
@@ -263,6 +282,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 				"Electric", "Steam" }));
 		locomotivePanel.add(engineType);
 
+		// creates a title for the locomotive weight
 		JLabel lblWeight = new JLabel("Weight:");
 		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, lblWeight, 11,
 				SpringLayout.SOUTH, lblPowerType);
@@ -270,6 +290,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 				SpringLayout.WEST, lblPowerType);
 		locomotivePanel.add(lblWeight);
 
+		// creates a textfield for weight input in locomotive panel
 		locoWeightField = new JTextField();
 		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, locoWeightField,
 				6, SpringLayout.SOUTH, powerRating);
@@ -278,6 +299,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		locomotivePanel.add(locoWeightField);
 		locoWeightField.setColumns(10);
 
+		// creates an 'add locomotive' button in locomotive panel
 		addLocomotiveBtn = new JButton("Add Locomotive");
 		sl_locomotivePanel.putConstraint(SpringLayout.NORTH, addLocomotiveBtn,
 				5, SpringLayout.SOUTH, locoWeightField);
@@ -291,6 +313,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		SpringLayout sl_conductorPanel = new SpringLayout();
 		conductorPanel.setLayout(sl_conductorPanel);
 
+		// creates a title for the conductor Panel
 		JLabel conductorTitle = new JLabel("Conductor Panel");
 		conductorTitle.setFont(new Font("Tahoma", Font.BOLD, 12));
 		sl_conductorPanel.putConstraint(SpringLayout.NORTH, conductorTitle, 10,
@@ -299,11 +322,13 @@ public class TrainGUI extends JFrame implements ActionListener {
 				SpringLayout.WEST, conductorPanel);
 		conductorPanel.add(conductorTitle);
 
+		// creates a title for user reference as to where to board passengers
 		boardLabel = new JLabel("Passengers to board:");
 		sl_conductorPanel.putConstraint(SpringLayout.WEST, boardLabel, 0,
 				SpringLayout.WEST, conductorTitle);
 		conductorPanel.add(boardLabel);
 
+		// creates a display to showcase how many passengers have boarded
 		totalPassengerLabel = new JLabel("Total Passengers: ");
 		sl_conductorPanel.putConstraint(SpringLayout.NORTH, boardLabel, 24,
 				SpringLayout.SOUTH, totalPassengerLabel);
@@ -313,6 +338,8 @@ public class TrainGUI extends JFrame implements ActionListener {
 				0, SpringLayout.WEST, conductorTitle);
 		conductorPanel.add(totalPassengerLabel);
 
+		// creates a vector integer model for the combox box
+		// allows the combobox used for boarding passengers to be dynamic
 		final DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<Integer>(
 				boardComboBoxItems);
 		boardComboBox = new JComboBox<Integer>(model);
@@ -324,6 +351,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 				SpringLayout.NORTH, conductorPanel);
 		conductorPanel.add(boardComboBox);
 
+		// creates a button for boarding passengers
 		boardBtn = new JButton("Click to Board");
 		boardBtn.setEnabled(false);
 		boardBtn.addActionListener(this);
@@ -333,6 +361,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 				SpringLayout.WEST, conductorTitle);
 		conductorPanel.add(boardBtn);
 
+		// creates a panel that contains the parameters for a freight car
 		JPanel freightCarPanel = new JPanel();
 		sl_trainDriverPanel.putConstraint(SpringLayout.WEST, freightCarPanel,
 				0, SpringLayout.WEST, trainDriverTitle);
@@ -345,6 +374,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		freightCarPanel.setEnabled(false);
 		trainDriverPanel.add(freightCarPanel);
 
+		// title for the freight car panel
 		freightCarSetupLabel = new JLabel("Freight Car Setup");
 		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, freightCarPanel,
 				6, SpringLayout.SOUTH, freightCarSetupLabel);
@@ -355,6 +385,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		SpringLayout sl_freightCarPanel = new SpringLayout();
 		freightCarPanel.setLayout(sl_freightCarPanel);
 
+		// creates a title for the goods type in freight car panel
 		JLabel lblGoodsType = new JLabel("Goods Type");
 		sl_freightCarPanel.putConstraint(SpringLayout.NORTH, lblGoodsType, 8,
 				SpringLayout.NORTH, freightCarPanel);
@@ -362,6 +393,8 @@ public class TrainGUI extends JFrame implements ActionListener {
 				SpringLayout.WEST, freightCarPanel);
 		freightCarPanel.add(lblGoodsType);
 
+		// creats a combo box that list the avaliable goods type in
+		// freight car panel
 		goodsType = new JComboBox();
 		sl_freightCarPanel.putConstraint(SpringLayout.NORTH, goodsType, -3,
 				SpringLayout.NORTH, lblGoodsType);
@@ -373,6 +406,8 @@ public class TrainGUI extends JFrame implements ActionListener {
 		goodsType.setEnabled(false);
 		freightCarPanel.add(goodsType);
 
+		// creates a weight title for frieght car weight in
+		// freight car panel
 		JLabel lblWeight_1 = new JLabel("Weight:");
 		sl_freightCarPanel.putConstraint(SpringLayout.NORTH, lblWeight_1, 14,
 				SpringLayout.SOUTH, lblGoodsType);
@@ -380,6 +415,8 @@ public class TrainGUI extends JFrame implements ActionListener {
 				SpringLayout.WEST, lblGoodsType);
 		freightCarPanel.add(lblWeight_1);
 
+		// creates a textfield for user to input the weight value
+		// in freight car panel
 		freightWeight = new JTextField();
 		sl_freightCarPanel.putConstraint(SpringLayout.NORTH, freightWeight, -3,
 				SpringLayout.NORTH, lblWeight_1);
@@ -389,6 +426,8 @@ public class TrainGUI extends JFrame implements ActionListener {
 		freightCarPanel.add(freightWeight);
 		freightWeight.setColumns(10);
 
+		// creates a button to add freight car
+		// in freight car panel
 		addFreightCarBtn = new JButton("Add Freight Car");
 		sl_freightCarPanel.putConstraint(SpringLayout.NORTH, addFreightCarBtn,
 				8, SpringLayout.SOUTH, lblWeight_1);
@@ -399,6 +438,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		freightCarPanel.add(addFreightCarBtn);
 		trainDriverPanel.add(freightCarSetupLabel);
 
+		// creates a title for passenger car panel
 		passengerCarSetupLabel = new JLabel("Passenger Car Setup");
 		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH,
 				passengerCarSetupLabel, 6, SpringLayout.SOUTH, locomotivePanel);
@@ -408,6 +448,8 @@ public class TrainGUI extends JFrame implements ActionListener {
 		passengerCarSetupLabel.setEnabled(false);
 		trainDriverPanel.add(passengerCarSetupLabel);
 
+		// creates a panel that contains the paraemeters for
+		// passenger car
 		JPanel passengerCarPanel = new JPanel();
 		sl_trainDriverPanel
 				.putConstraint(SpringLayout.NORTH, freightCarSetupLabel, 10,
@@ -427,6 +469,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		SpringLayout sl_passengerCarPanel = new SpringLayout();
 		passengerCarPanel.setLayout(sl_passengerCarPanel);
 
+		// creates a title for the passenger car limit textfield
 		JLabel passengerLimitLabel = new JLabel("Passenger Limit:");
 		sl_passengerCarPanel.putConstraint(SpringLayout.NORTH,
 				passengerLimitLabel, 10, SpringLayout.NORTH, passengerCarPanel);
@@ -434,6 +477,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 				passengerLimitLabel, 10, SpringLayout.WEST, passengerCarPanel);
 		passengerCarPanel.add(passengerLimitLabel);
 
+		// creates a title for the passenger car weight textfield
 		JLabel passengerWeightLabel = new JLabel("Weight:");
 		sl_passengerCarPanel.putConstraint(SpringLayout.NORTH,
 				passengerWeightLabel, 16, SpringLayout.SOUTH,
@@ -442,6 +486,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 				passengerWeightLabel, 10, SpringLayout.WEST, passengerCarPanel);
 		passengerCarPanel.add(passengerWeightLabel);
 
+		// creates a button for adding passenger car
 		addPassengerCarBtn = new JButton("Add Passenger Car");
 		sl_passengerCarPanel.putConstraint(SpringLayout.WEST,
 				addPassengerCarBtn, 0, SpringLayout.WEST, passengerLimitLabel);
@@ -449,6 +494,8 @@ public class TrainGUI extends JFrame implements ActionListener {
 		addPassengerCarBtn.setEnabled(false);
 		passengerCarPanel.add(addPassengerCarBtn);
 
+		// creates a textfield for user to input how many passenger capacity for
+		// current passenger car
 		passengerLimitField = new JTextField();
 		passengerLimitField.setEnabled(false);
 		sl_passengerCarPanel.putConstraint(SpringLayout.WEST,
@@ -470,6 +517,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		passengerCarPanel.add(passengerWeight);
 		passengerWeight.setColumns(10);
 
+		// creates a button to remove a carriage from the train
 		removeCarriageBtn = new JButton("Remove Carriage");
 		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH,
 				removeCarriageBtn, 6, SpringLayout.SOUTH, freightCarPanel);
@@ -479,6 +527,8 @@ public class TrainGUI extends JFrame implements ActionListener {
 		removeCarriageBtn.addActionListener(this);
 		trainDriverPanel.add(removeCarriageBtn);
 
+		// creates a button to reset the settings of the train driver and
+		// conductor panels
 		startTrainBtn = new JButton("Reset Configuration");
 		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, startTrainBtn, 6,
 				SpringLayout.SOUTH, freightCarPanel);
@@ -490,6 +540,8 @@ public class TrainGUI extends JFrame implements ActionListener {
 				SpringLayout.EAST, trainDriverPanel);
 		trainDriverPanel.add(startTrainBtn);
 
+		// creates a title that updates base off the total gross weight of the
+		// train
 		totalWeightLabel = new JLabel("Train Total Weight:");
 		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, totalWeightLabel,
 				6, SpringLayout.SOUTH, trainDriverTitle);
@@ -497,6 +549,8 @@ public class TrainGUI extends JFrame implements ActionListener {
 				0, SpringLayout.WEST, trainDriverTitle);
 		trainDriverPanel.add(totalWeightLabel);
 
+		// creates a title that updates base off the locomotive power of the
+		// train
 		trainPullingLimitLabel = new JLabel("Train Pulling Capacity:");
 		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH,
 				trainPullingLimitLabel, 50, SpringLayout.NORTH,
@@ -505,6 +559,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 				trainPullingLimitLabel, 0, SpringLayout.WEST, trainDriverTitle);
 		trainDriverPanel.add(trainPullingLimitLabel);
 
+		// creats a title that updates whether the train can move or not
 		trainCanMoveLabel = new JLabel("Train Can Move:");
 		sl_trainDriverPanel.putConstraint(SpringLayout.NORTH, locomotivePanel,
 				30, SpringLayout.SOUTH, trainCanMoveLabel);
@@ -515,6 +570,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 				0, SpringLayout.WEST, trainDriverTitle);
 		trainDriverPanel.add(trainCanMoveLabel);
 
+		// creates a title for the error message box
 		errorMessageBoxLabel = new JLabel("Error Console");
 		sl_contentPanel.putConstraint(SpringLayout.SOUTH, conductorPanel, -81,
 				SpringLayout.NORTH, errorMessageBoxLabel);
@@ -523,6 +579,7 @@ public class TrainGUI extends JFrame implements ActionListener {
 		sl_contentPanel.putConstraint(SpringLayout.SOUTH, errorMessageBoxLabel,
 				-6, SpringLayout.NORTH, ErrorMessageBox);
 
+		// creates a title for the locomotive panel
 		locomotiveSetupLabel = new JLabel("Locomotive Setup");
 		locomotiveSetupLabel.setFont(new Font("Tahoma", Font.ITALIC, 11));
 		sl_trainDriverPanel.putConstraint(SpringLayout.WEST,
@@ -971,7 +1028,8 @@ public class TrainGUI extends JFrame implements ActionListener {
 			addFreightCarBtn.setEnabled(false);
 			ErrorMessageBox.append("The train is overladen and cannot move.");
 		} else {
-			if (e.getActionCommand() == "Add Freight Car") {
+			if (e.getActionCommand() == "Add Freight Car"
+					|| currentCarriage instanceof FreightCar) {
 				addPassengerCarBtn.setEnabled(false);
 			} else if (carriagePanelStack.size() == 0) {
 				resetToDefaultLayoutAndValues();
